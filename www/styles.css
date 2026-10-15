@@ -98,15 +98,41 @@ h2 { font-size: 1.7rem; margin: 6px 0; color: #ff4f93; }
 .tray .ico { height: 48px; }
 .tray .fb.ico { font-size: 2.2rem; line-height: 48px; }
 
-.personaje-confirmacion {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 16px auto;
-}
+/* ===== Etapa 2: confirmación, cuerpo, rompecabezas, nivel 4 ===== */
+.confirm-img { height: min(42vh, 360px); display: flex; justify-content: center; align-items: center; }
+.confirm-pic { height: 100%; max-width: 90vw; object-fit: contain; }
+.sil-wrap { position: relative; height: 100%; aspect-ratio: 1 / 2; }
+.sil-wrap .badge { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); font-size: 2.4rem; z-index: 5; }
+.sil u { position: absolute; left: 8%; top: 23%; width: 84%; height: 22%; border-radius: 14px; background: var(--skin); z-index: 0; }
 
-.personaje-confirmacion img {
-  width: 180px;
-  height: 220px;
-  object-fit: contain;
-}
+/* música/"voz": notas flotando mientras la educadora habla (movimiento decorativo, no sincronía labial) */
+.edu { position: relative; }
+.edu.talking::before { content: "♪  ♫"; position: absolute; top: 4%; right: -6%; font-size: 1.6rem; color: #ff4f93;
+  animation: notes 1.1s ease-in-out infinite; }
+@keyframes notes { 0% { transform: translateY(6px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .edu.talking::before { animation: none; } }
+
+.persona { gap: 6px; }
+.persona .big { font-size: .95rem; padding: 8px 4px; min-height: 52px; }
+.persona .big.on { background: var(--pink); box-shadow: 0 4px 0 var(--pink-d); }
+.big-stage { height: min(54vh, 440px); }
+.mini { height: 200px; }
+.zone { position: absolute; padding: 0; border: 2px dashed rgba(74, 44, 26, .35); border-radius: 10px;
+  background: rgba(255, 255, 255, .2); z-index: 5; }
+.zone.z-verde { background: rgba(76, 175, 80, .75); border: 3px solid #2e7d32; }
+.zone.z-amarillo { background: rgba(255, 193, 7, .8); border: 3px solid #f9a825; }
+.zone.z-rojo { background: rgba(229, 57, 53, .8); border: 3px solid #b71c1c; }
+.zone.z-here { background: rgba(229, 57, 53, .35); border: 3px solid #e53935; animation: here 1s ease-in-out infinite alternate; }
+@keyframes here { from { opacity: .5; } to { opacity: 1; } }
+.result { font-size: 1.15rem; font-weight: 600; min-height: 90px; justify-content: center; }
+.result.res-verde { background: #e1f5e2; border: 3px solid #43a047; }
+.result.res-amarillo { background: #fff6d6; border: 3px solid #f9a825; }
+.result.res-rojo { background: #fde3e2; border: 3px solid #e53935; }
+
+.puzzle-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; width: min(86vw, 340px);
+  aspect-ratio: 1 / 1; background: #fff; padding: 3px; border-radius: 16px; }
+.piece { border: 3px solid transparent; border-radius: 8px; padding: 0; background-color: #ffe3ef;
+  background-repeat: no-repeat; background-size: 300% 300%; font-size: 1.6rem; font-weight: 800; color: #fff; }
+.piece.ok { border-color: #66bb6a; }
+.piece.sel { border-color: var(--pink); transform: scale(.94); }
+.piece:disabled { opacity: 1; }
