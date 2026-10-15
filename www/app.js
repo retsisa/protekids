@@ -32,8 +32,20 @@
     var d = document.createElement("div");
     d.className = "sil " + id;
     d.setAttribute("role", "img");
-    d.innerHTML = "<i></i><b></b>";
+    d.innerHTML = "<u></u><i></i><b></b>";
     return d;
+  };
+
+  // Silueta con carita encima (alternativa de la pantalla de confirmación).
+  PK.silhouetteWithFace = function (id, face) {
+    var w = document.createElement("div");
+    w.className = "sil-wrap";
+    w.appendChild(PK.silhouette(id));
+    var b = document.createElement("span");
+    b.className = "badge";
+    b.textContent = face || "";
+    w.appendChild(b);
+    return w;
   };
 
   PK.hydrate = function (root) {
