@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ProteKids</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="home" class="screen active">
+    <h1>ProteKids</h1>
+    <p class="tagline">Pequeñas voces, grandes derechos</p>
+    <div class="hero" aria-hidden="true">🌈</div>
+    <p class="hello">¡Bienvenidos, corazones!</p>
+    <button class="big" id="btn-stories">📖 Cuentos</button>
+  </main>
+
+  <main id="stories" class="screen">
+    <h2>Cuentos</h2>
+    <div id="story-list" class="list"></div>
+    <button class="big secondary" id="btn-back-home">⬅ Inicio</button>
+  </main>
+
+  <main id="reader" class="screen">
+    <h2 id="story-title"></h2>
+    <p id="story-text" class="story"></p>
+    <p id="story-page" class="page-count"></p>
+    <div class="row">
+      <button class="big secondary" id="btn-prev">⬅</button>
+      <button class="big" id="btn-next">➡</button>
+    </div>
+    <button class="big secondary" id="btn-back-stories">📚 Cuentos</button>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
