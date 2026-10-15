@@ -37,11 +37,27 @@
   }
 
   // ----- Confirmación -----
-  PK.hooks.confirm = function () { $("notready").hidden = true; $("wait-msg").hidden = true; };
-  $("btn-ready-yes").addEventListener("click", function () { PK.go("level1"); });
-  $("btn-ready-no").addEventListener("click", function () { $("notready").hidden = false; });
-  $("btn-wait").addEventListener("click", function () { $("wait-msg").hidden = false; });
-  $("btn-retry").addEventListener("click", function () { $("notready").hidden = true; $("wait-msg").hidden = true; });
+  PK.hooks.confirm = function () {
+    $("notready").hidden = true;
+    $("wait-msg").hidden = true;
+
+    // Mostrar el personaje elegido en el Nivel 1
+    var img = $("confirm-character");
+
+    if (img) {
+      if (S.character === "nina") {
+        img.src = "assets/images/nina-agotada.png";
+        img.alt = "Niña agotada";
+      } else if (S.character === "nino") {
+        img.src = "assets/images/nino-agotado.png";
+        img.alt = "Niño agotado";
+      }
+    }
+  };
+
+  $("btn-ready-yes").addEventListener("click", function () {
+    PK.go("level1");
+  });
 
   // ----- Nivel 1 -----
   function buildCharacters() {
