@@ -19,7 +19,8 @@
     <button class="big" id="btn-listen">🔊 Escuchar a ProteKids</button>
     <p class="question">¿Estás bien o mal?</p>
     <div class="row choices">
-      <!-- RECURSO PROPIO: caritas -> www/assets/images/emociones/feliz.png y triste.png -->
+      <!-- CAMBIAR IMAGEN DEL ESTADO FELIZ AQUÍ: assets/images/emociones/feliz.png (data-img del primer botón) -->
+      <!-- CAMBIAR IMAGEN DEL ESTADO AGOTADO AQUÍ: assets/images/emociones/triste.png (data-img del segundo botón) -->
       <button class="choice" data-mood="bien"><span data-img="assets/images/emociones/feliz.png" data-alt="" data-fb="😊" data-cls="ico"></span><span>Estoy bien</span></button>
       <button class="choice" data-mood="mal"><span data-img="assets/images/emociones/triste.png" data-alt="" data-fb="😢" data-cls="ico"></span><span>Estoy mal</span></button>
     </div>
@@ -31,7 +32,7 @@
     <button class="back" data-back>⬅ Volver</button>
     <h2>Nivel 1 · ¿Quién soy?</h2>
     <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
-    <p class="hello">Elige el personaje con el que quieres jugar. ¡Puedes cambiarlo cuando quieras!</p>
+    <p class="hello">¡Vamos a elegir! ¿Quieres jugar con el niño o con la niña?</p>
     <button class="link" data-say="nivel1">🔊 Escuchar</button>
     <div class="row choices" id="char-list"></div>
     <p id="char-msg" class="soft"></p>
@@ -41,15 +42,8 @@
   <!-- ===== CONFIRMACIÓN ===== -->
   <main id="confirm" class="screen">
     <button class="back" data-back>⬅ Volver</button>
-    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <div id="confirm-img" class="confirm-img"></div>
     <h2>¿Estás listo para comenzar?</h2>
-    <div class="personaje-confirmacion">
-    <img
-      id="confirm-character"
-      src="assets/images/personajes/nino-agotado.png"
-      alt="Personaje agotado"
-      >
-    </div>
     <button class="link" data-say="listo">🔊 Escuchar</button>
     <div class="row choices">
       <button class="choice yes" id="btn-ready-yes"><span class="mark">✔</span><span>Sí, estoy listo</span></button>
@@ -69,7 +63,7 @@
     <button class="back" data-back>⬅ Volver</button>
     <h2>Nivel 2 · Prendas de vestir</h2>
     <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
-    <p class="hello">Toca las prendas que quieras. ¡Puedes combinarlas como más te guste!</p>
+    <p class="hello">¡Vamos a vestir a nuestro personaje! Elige las prendas que más te gusten.</p>
     <button class="link" data-say="nivel2">🔊 Escuchar</button>
     <div class="stage" id="stage"></div>
     <div class="tray" id="tray"></div>
@@ -80,13 +74,64 @@
     <button class="big" id="btn-l2-next">Continuar ➡</button>
   </main>
 
-  <!-- ===== PROVISIONAL: aquí continuará el Nivel 3 (Etapa 2) ===== -->
-  <main id="soon" class="screen">
+  <!-- ===== NIVEL 3 ===== -->
+  <main id="level3" class="screen">
     <button class="back" data-back>⬅ Volver</button>
-    <h2>¡Muy bien!</h2>
-    <div class="hero" aria-hidden="true">🌈</div>
-    <p class="hello">Aquí continuará el Nivel 3. ¡Pronto!</p>
-    <button class="big secondary" id="btn-soon-home">🏠 Ir al inicio</button>
+    <h2>Nivel 3 · Partes de mi cuerpo</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello" id="l3-question"></p>
+    <div class="row persona">
+      <button class="big secondary" data-persona="mama">Mamá</button>
+      <button class="big secondary" data-persona="educadora">Educadora</button>
+      <button class="big secondary" data-persona="extrano">Desconocido</button>
+    </div>
+    <button class="link" id="btn-l3-say">🔊 Escuchar</button>
+    <div class="stage big-stage" id="body-stage"></div>
+    <div id="l3-result" class="panel result" role="status" aria-live="polite">Toca una parte del cuerpo.</div>
+    <button class="big" id="btn-l3-next">Continuar ➡</button>
+  </main>
+
+  <!-- ===== PAUSA: ROMPECABEZAS ===== -->
+  <main id="puzzle" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Pausa · Rompecabezas</h2>
+    <p class="hello">Toca una pieza y luego otra para cambiarlas de lugar.</p>
+    <button class="link" data-say="puzzle">🔊 Escuchar</button>
+    <p id="puzzle-progress" class="soft"></p>
+    <div id="puzzle-board" class="puzzle-board"></div>
+    <p id="puzzle-msg" class="soft"></p>
+    <button class="big secondary" id="btn-shuffle">🔀 Mezclar de nuevo</button>
+    <button class="big" id="btn-pz-next">Continuar ➡</button>
+  </main>
+
+  <!-- ===== NIVEL 4 ===== -->
+  <main id="level4" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 4 · Si alguien te toca aquí, ¿a quién irías a contarle?</h2>
+    <div class="stage mini" id="mini-stage"></div>
+    <p class="soft">Puedes elegir a una o más personas. Si no te sientes seguro con alguien, elige a otra.</p>
+    <button class="link" data-say="nivel4">🔊 Escuchar</button>
+    <div class="tray" id="trust-list"></div>
+    <p id="trust-msg" class="soft"></p>
+    <button class="big" id="btn-l4-next" disabled>Continuar ➡</button>
+  </main>
+
+  <main id="feelings" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>¿Y cómo te sentiste?</h2>
+    <button class="link" data-say="sentiste">🔊 Escuchar</button>
+    <div class="tray" id="feel-list"></div>
+    <p id="feel-msg" class="soft"></p>
+    <button class="big" id="btn-f-next" disabled>Continuar ➡</button>
+  </main>
+
+  <!-- ===== DESPEDIDA ===== -->
+  <main id="end" class="screen">
+    <div class="edu" id="edu-end"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">ProteKids te recomienda amar, respetar y cuidar tu cuerpo. Si te sientes incómodo, triste o asustado, acude y cuéntale a tu mamá, profesora u otra persona adulta de confianza. ¡Hasta otra oportunidad, corazón!</p>
+    <button class="link" data-say="despedida">🔊 Escuchar</button>
+    <button class="big" id="btn-again">🔁 Jugar de nuevo</button>
+    <button class="big secondary" id="btn-end-stories">📖 Cuentos</button>
   </main>
 
   <!-- ===== CUENTOS (se conserva) ===== -->
@@ -112,5 +157,6 @@
   <script src="js/audio.js"></script>
   <script src="app.js"></script>
   <script src="js/levels12.js"></script>
+  <script src="js/levels34.js"></script>
 </body>
 </html>
