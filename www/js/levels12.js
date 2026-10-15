@@ -24,8 +24,8 @@
   var GARMENTS = [
     //{ id: "visera",   label: "Visera",   img: "assets/images/prendas/visera.png",   emoji: "🧢", color: "#ffb74d", top: 1,  left: 22, w: 56, h: 9 },
     { id: "polera",   label: "Polera",   img: "assets/images/prendas/polera.png",   emoji: "👕", color: "#4aa3df", top: 22, left: 18, w: 64, h: 26 },
-    { id: "pantalon", label: "Pantalón", img: "assets/images/prendas/pantalon.png", emoji: "👖", color: "#5c6bc0", top: 48, left: 24, w: 52, h: 36 },
-    { id: "falda",    label: "Falda",    img: "assets/images/prendas/falda.png",    emoji: "👗", color: "#f06292", top: 48, left: 19, w: 62, h: 22 },
+    { id: "pantalon", label: "Pantalón", img: "assets/images/prendas/pantalones.png", emoji: "👖", color: "#5c6bc0", top: 48, left: 24, w: 52, h: 36 },
+    { id: "falda",    label: "Falda",    img: "assets/images/prendas/vestido.png",    emoji: "👗", color: "#f06292", top: 48, left: 19, w: 62, h: 22 },
     { id: "tenis",    label: "Tenis",    img: "assets/images/prendas/tenis.png",    emoji: "👟", color: "#66bb6a", top: 86, left: 20, w: 60, h: 12 }
   ];
   PK.CHARACTERS = CHARACTERS;
