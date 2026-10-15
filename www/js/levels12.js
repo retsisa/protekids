@@ -1,17 +1,26 @@
-// Etapa 1: bienvenida, confirmación, Nivel 1 y Nivel 2.
+// Flujo: Bienvenida -> Nivel 1 -> Confirmación -> Nivel 2 -> (levels34.js)
 (function () {
   "use strict";
   var PK = window.PK, $ = PK.$, S = PK.state;
 
-  // RECURSO PROPIO: personajes del Nivel 1 y del vestidor. Cambia "img" por el nombre de tu archivo.
+  // CAMBIAR IMAGEN DEL NIÑO AQUÍ (campo img de "nino")
+  // CAMBIAR IMAGEN DE LA NIÑA AQUÍ (campo img de "nina")
   var CHARACTERS = [
     { id: "nino", label: "Niño", img: "assets/images/nino.png" },
     { id: "nina", label: "Niña", img: "assets/images/nina.png" }
   ];
 
-  // RECURSO PROPIO: prendas. Cambia "img" por tus PNG (con fondo transparente, del mismo tamaño que el personaje
-  // para que encajen). top/left/w/h son porcentajes del personaje. Para añadir prendas, agrega otra línea aquí.
-  // "emoji" y "color" son la imagen provisional si el archivo no existe.
+  // Imagen de la pantalla de confirmación según personaje + estado emocional.
+  // CAMBIAR IMAGEN DEL ESTADO FELIZ AQUÍ (entradas "bien")
+  // CAMBIAR IMAGEN DEL ESTADO AGOTADO AQUÍ (entradas "mal")
+  var CONFIRM_IMAGES = {
+    nino: { bien: { img: "assets/images/nino-feliz.png",   face: "😊", alt: "Niño feliz" },
+            mal:  { img: "assets/images/nino-agotado.png", face: "😮‍💨", alt: "Niño agotado" } },
+    nina: { bien: { img: "assets/images/nina-feliz.png",   face: "😊", alt: "Niña feliz" },
+            mal:  { img: "assets/images/nina-agotada.png", face: "😮‍💨", alt: "Niña agotada" } }
+  };
+
+  // RECURSO PROPIO: prendas (PNG transparente, mismo tamaño que el personaje). top/left/w/h = % del personaje.
   var GARMENTS = [
     { id: "visera",   label: "Visera",   img: "assets/images/prendas/visera.png",   emoji: "🧢", color: "#ffb74d", top: 1,  left: 22, w: 56, h: 9 },
     { id: "polera",   label: "Polera",   img: "assets/images/prendas/polera.png",   emoji: "👕", color: "#4aa3df", top: 22, left: 18, w: 64, h: 26 },
@@ -19,11 +28,15 @@
     { id: "falda",    label: "Falda",    img: "assets/images/prendas/falda.png",    emoji: "👗", color: "#f06292", top: 48, left: 19, w: 62, h: 22 },
     { id: "tenis",    label: "Tenis",    img: "assets/images/prendas/tenis.png",    emoji: "👟", color: "#66bb6a", top: 86, left: 20, w: 60, h: 12 }
   ];
+  PK.CHARACTERS = CHARACTERS;
+  PK.byId = function (list, id) { return list.filter(function (x) { return x.id === id; })[0]; };
+  var byId = PK.byId;
 
-  function byId(list, id) { return list.filter(function (x) { return x.id === id; })[0]; }
-
-  // ----- Bienvenida -----
-  PK.hooks.welcome = function () { PK.Educadora.saludar($("edu-welcome")); };
+  // ----- Bienvenida: saluda y el niño elige cómo se siente -----
+  PK.hooks.welcome = function () {
+    PK.Educadora.saludar($("edu-welcome"));
+    PK.Audio.play(PK.AUDIO.presentacion, function () { PK.Audio.play(PK.AUDIO.bienvenida); }); // automático si el sistema lo permite
+  };
   $("btn-listen").addEventListener("click", function () {
     PK.Educadora.saludar($("edu-welcome"));
     PK.Audio.play(PK.AUDIO.presentacion, function () { PK.Audio.play(PK.AUDIO.bienvenida); });
@@ -32,34 +45,11 @@
   for (var m = 0; m < moods.length; m++) {
     moods[m].addEventListener("click", function (e) {
       S.mood = e.currentTarget.getAttribute("data-mood");
-      PK.go("confirm");
+      PK.go("level1");
     });
   }
 
-  // ----- Confirmación -----
-  PK.hooks.confirm = function () {
-    $("notready").hidden = true;
-    $("wait-msg").hidden = true;
-
-    // Mostrar el personaje elegido en el Nivel 1
-    var img = $("confirm-character");
-
-    if (img) {
-      if (S.character === "nina") {
-        img.src = "assets/images/nina-agotada.png";
-        img.alt = "Niña agotada";
-      } else if (S.character === "nino") {
-        img.src = "assets/images/nino-agotado.png";
-        img.alt = "Niño agotado";
-      }
-    }
-  };
-
-  $("btn-ready-yes").addEventListener("click", function () {
-    PK.go("level1");
-  });
-
-  // ----- Nivel 1 -----
+  // ----- Nivel 1: ¿Quién soy? -----
   function buildCharacters() {
     var box = $("char-list");
     CHARACTERS.forEach(function (c) {
@@ -88,10 +78,28 @@
     $("char-msg").textContent = c ? "Elegiste: " + c.label + ". ¡Puedes cambiarlo cuando quieras!" : "";
     $("btn-l1-next").disabled = !c;
   }
-  PK.hooks.level1 = refreshLevel1;
-  $("btn-l1-next").addEventListener("click", function () { if (S.character) { PK.go("level2"); } });
+  PK.hooks.level1 = function () { refreshLevel1(); PK.Audio.play(PK.AUDIO.nivel1); };
+  $("btn-l1-next").addEventListener("click", function () { if (S.character) { PK.go("confirm"); } });
 
-  // ----- Nivel 2 -----
+  // ----- Confirmación: imagen según personaje + estado (se recalcula cada vez que se entra) -----
+  function renderConfirmImage() {
+    var cid = S.character || "nino";
+    var e = CONFIRM_IMAGES[cid][S.mood === "mal" ? "mal" : "bien"];
+    var box = $("confirm-img");
+    box.textContent = "";
+    box.appendChild(PK.img(e.img, e.alt, function () { return PK.silhouetteWithFace(cid, e.face); }, "confirm-pic"));
+  }
+  PK.hooks.confirm = function () {
+    $("notready").hidden = true; $("wait-msg").hidden = true;
+    renderConfirmImage();
+    PK.Audio.play(PK.AUDIO.listo);
+  };
+  $("btn-ready-yes").addEventListener("click", function () { PK.go("level2"); });
+  $("btn-ready-no").addEventListener("click", function () { $("notready").hidden = false; });
+  $("btn-wait").addEventListener("click", function () { $("wait-msg").hidden = false; });
+  $("btn-retry").addEventListener("click", function () { $("notready").hidden = true; $("wait-msg").hidden = true; });
+
+  // ----- Nivel 2: Prendas de vestir -----
   function renderStage() {
     var st = $("stage");
     st.textContent = "";
@@ -133,11 +141,10 @@
       $("tray").appendChild(b);
     });
   }
-  PK.hooks.level2 = renderStage;
+  PK.hooks.level2 = function () { renderStage(); PK.Audio.play(PK.AUDIO.nivel2); };
   $("btn-undo").addEventListener("click", function () { S.worn.pop(); renderStage(); });
   $("btn-reset").addEventListener("click", function () { S.worn = []; renderStage(); });
-  $("btn-l2-next").addEventListener("click", function () { PK.go("soon"); });
-  $("btn-soon-home").addEventListener("click", function () { PK.go("welcome"); });
+  $("btn-l2-next").addEventListener("click", function () { PK.go("level3"); });
 
   buildCharacters();
   buildTray();
