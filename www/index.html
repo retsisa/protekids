@@ -7,14 +7,82 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main id="home" class="screen active">
-    <h1>ProteKids</h1>
+
+  <!-- ===== BIENVENIDA ===== -->
+  <main id="welcome" class="screen active">
+    <!-- RECURSO PROPIO: coloca aquí el logotipo -> www/assets/images/logo.png (para otro nombre, cambia data-img) -->
+    <span data-img="assets/images/logo.png" data-alt="ProteKids" data-fb="ProteKids" data-cls="logo"></span>
     <p class="tagline">Pequeñas voces, grandes derechos</p>
-    <div class="hero" aria-hidden="true">🌈</div>
-    <p class="hello">¡Bienvenidos, corazones!</p>
-    <button class="big" id="btn-stories">📖 Cuentos</button>
+    <!-- RECURSO PROPIO: ilustración de la educadora -> www/assets/images/educadora.png -->
+    <div class="edu" id="edu-welcome"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">¡Bienvenidos, corazones! Yo soy ProteKids. ¿Comenzamos?</p>
+    <button class="big" id="btn-listen">🔊 Escuchar a ProteKids</button>
+    <p class="question">¿Estás bien o mal?</p>
+    <div class="row choices">
+      <!-- RECURSO PROPIO: caritas -> www/assets/images/emociones/feliz.png y triste.png -->
+      <button class="choice" data-mood="bien"><span data-img="assets/images/emociones/feliz.png" data-alt="" data-fb="😊" data-cls="ico"></span><span>Estoy bien</span></button>
+      <button class="choice" data-mood="mal"><span data-img="assets/images/emociones/triste.png" data-alt="" data-fb="😢" data-cls="ico"></span><span>Estoy mal</span></button>
+    </div>
+    <button class="link" id="btn-stories">📖 Cuentos</button>
   </main>
 
+  <!-- ===== CONFIRMACIÓN ===== -->
+  <main id="confirm" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <h2>¿Estás listo para comenzar?</h2>
+    <button class="link" data-say="listo">🔊 Escuchar</button>
+    <div class="row choices">
+      <button class="choice yes" id="btn-ready-yes"><span class="mark">✔</span><span>Sí, estoy listo</span></button>
+      <button class="choice no" id="btn-ready-no"><span class="mark">✖</span><span>Todavía no</span></button>
+    </div>
+    <div id="notready" class="panel" hidden>
+      <p>¡No hay problema! Tómate el tiempo que necesites.</p>
+      <p id="wait-msg" class="soft" hidden>Aquí te espero. Cuando quieras, toca «Sí, estoy listo».</p>
+      <button class="big secondary" data-say="listo">🔊 Escuchar otra vez</button>
+      <button class="big secondary" id="btn-wait">⏳ Esperar un poquito</button>
+      <button class="big secondary" id="btn-retry">🔁 Volver a intentarlo</button>
+    </div>
+  </main>
+
+  <!-- ===== NIVEL 1 ===== -->
+  <main id="level1" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 1 · ¿Quién soy?</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">Elige el personaje con el que quieres jugar. ¡Puedes cambiarlo cuando quieras!</p>
+    <button class="link" data-say="nivel1">🔊 Escuchar</button>
+    <div class="row choices" id="char-list"></div>
+    <p id="char-msg" class="soft"></p>
+    <button class="big" id="btn-l1-next" disabled>Continuar ➡</button>
+  </main>
+
+  <!-- ===== NIVEL 2 ===== -->
+  <main id="level2" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 2 · Prendas de vestir</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">Toca las prendas que quieras. ¡Puedes combinarlas como más te guste!</p>
+    <button class="link" data-say="nivel2">🔊 Escuchar</button>
+    <div class="stage" id="stage"></div>
+    <div class="tray" id="tray"></div>
+    <div class="row">
+      <button class="big secondary" id="btn-undo">↩ Quitar última</button>
+      <button class="big secondary" id="btn-reset">🔄 Reiniciar</button>
+    </div>
+    <button class="big" id="btn-l2-next">Continuar ➡</button>
+  </main>
+
+  <!-- ===== PROVISIONAL: aquí continuará el Nivel 3 (Etapa 2) ===== -->
+  <main id="soon" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>¡Muy bien!</h2>
+    <div class="hero" aria-hidden="true">🌈</div>
+    <p class="hello">Aquí continuará el Nivel 3. ¡Pronto!</p>
+    <button class="big secondary" id="btn-soon-home">🏠 Ir al inicio</button>
+  </main>
+
+  <!-- ===== CUENTOS (se conserva) ===== -->
   <main id="stories" class="screen">
     <h2>Cuentos</h2>
     <div id="story-list" class="list"></div>
@@ -32,6 +100,10 @@
     <button class="big secondary" id="btn-back-stories">📚 Cuentos</button>
   </main>
 
+  <script src="js/state.js"></script>
+  <script src="js/educadora.js"></script>
+  <script src="js/audio.js"></script>
   <script src="app.js"></script>
+  <script src="js/levels12.js"></script>
 </body>
 </html>
