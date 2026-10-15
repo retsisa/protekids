@@ -1,7 +1,7 @@
 // Estado en memoria. No se guarda ni se envía a ningún lado.
 window.PK = window.PK || {};
-PK.state = {
-  mood: null,        // "bien" | "mal" (estado emocional inicial)
-  character: null,   // "nino" | "nina" (personaje elegido; es una preferencia, no un juicio)
-  worn: []           // ids de prendas puestas, en orden
+PK.state = { mood: null, character: null, worn: [], trusted: [], feeling: null, quiz: [], situations: [], actions: [] };
+PK.resetState = function () {
+  var s = PK.state;
+  s.mood = null; s.character = null; s.worn = []; s.trusted = []; s.feeling = null; s.quiz = []; s.situations = []; s.actions = [];
 };
