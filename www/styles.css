@@ -97,3 +97,16 @@ h2 { font-size: 1.7rem; margin: 6px 0; color: #ff4f93; }
 .tray .choice { flex: 0 0 96px; min-height: 100px; font-size: .95rem; padding: 8px; }
 .tray .ico { height: 48px; }
 .tray .fb.ico { font-size: 2.2rem; line-height: 48px; }
+
+.personaje-confirmacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto;
+}
+
+.personaje-confirmacion img {
+  width: 180px;
+  height: 220px;
+  object-fit: contain;
+}
