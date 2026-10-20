@@ -55,6 +55,10 @@ h2 { font-size: 1.7rem; margin: 6px 0; color: #ff4f93; }
 @keyframes edu-talk { from { transform: translateY(0); } to { transform: translateY(-8px) scale(1.02); } }
 @keyframes edu-wave { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
 @media (prefers-reduced-motion: reduce) { .edu, .edu.talking, .edu.wave { animation: none; } }
+/* Con el personaje animado por canvas (js/educadora.js) el movimiento lo hace el código, no el CSS */
+.edu.rig, .edu.rig.talking, .edu.rig.wave { animation: edu-in .8s ease-out both; }
+.edu.rig.talking::before { display: none; }
+.edu-canvas { display: block; width: auto; max-width: none; }
 
 /* Opciones grandes */
 .choices { justify-content: center; flex-wrap: wrap; }
