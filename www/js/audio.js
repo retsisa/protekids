@@ -51,7 +51,7 @@
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !text) { if (done) { done(); } return; }
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "es-ES"; u.rate = 0.9; u.pitch = 1.2;
-      u.onstart = function () { if (my === token) { talking(true); } };
+      u.onstart = function () { if (my === token) { talking(true); if (PK.Educadora.speakStart) { PK.Educadora.speakStart(text, null, null, u.rate); } } };
       u.onend = u.onerror = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
       window.speechSynthesis.speak(u);
     } catch (e) { talking(false); }
@@ -65,7 +65,7 @@
     function fallback() { if (fell || my !== token) { return; } fell = true; speak(item.text, my, done); }
     if (!item.src) { fallback(); return; }
     el.onerror = fallback;
-    el.onplaying = function () { if (my === token) { talking(true); } };
+    el.onplaying = function () { if (my === token) { talking(true); if (PK.Educadora.speakStart) { PK.Educadora.speakStart(item.text, el, item.src); } } };
     el.onended = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
     try {
       el.src = item.src;
