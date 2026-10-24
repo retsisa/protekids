@@ -5,9 +5,11 @@
 
   // CAMBIAR IMAGEN DEL NIÑO AQUÍ (campo img de "nino")
   // CAMBIAR IMAGEN DE LA NIÑA AQUÍ (campo img de "nina")
+  // ratio = ancho / alto del PNG (nino.png 624x1674, nina.png 784x1326). Si cambias el dibujo, actualiza ratio
+  // y vuelve a ajustar las prendas de abajo.
   var CHARACTERS = [
-    { id: "nino", label: "Niño", img: "assets/images/nino.png" },
-    { id: "nina", label: "Niña", img: "assets/images/nina.png" }
+    { id: "nino", label: "Niño", img: "assets/images/nino.png", ratio: 624 / 1674 },
+    { id: "nina", label: "Niña", img: "assets/images/nina.png", ratio: 784 / 1326 }
   ];
 
   // Imagen de la pantalla de confirmación según personaje + estado emocional.
@@ -20,13 +22,25 @@
             mal:  { img: "assets/images/nina-agotada.png", face: "😮‍💨", alt: "Niña agotada" } }
   };
 
-  // RECURSO PROPIO: prendas (PNG transparente, mismo tamaño que el personaje). top/left/w/h = % del personaje.
+  // RECURSO PROPIO: prendas (PNG con fondo transparente; ya recortadas en assets/images/prendas/).
+  // Cada prenda se coloca por separado sobre el niño y la niña: top/left/w/h son % del PNG del personaje,
+  // medidos sobre nino.png y nina.png. "z" es el orden de capas (pantalón < vestido < polera < tenis).
+  // Para añadir una prenda: agrega otro bloque con sus "parts" para nino y nina.
+  var P = "assets/images/prendas/";
   var GARMENTS = [
-    //{ id: "visera",   label: "Visera",   img: "assets/images/prendas/visera.png",   emoji: "🧢", color: "#ffb74d", top: 1,  left: 22, w: 56, h: 9 },
-    { id: "polera",   label: "Polera",   img: "assets/images/prendas/polera.png",   emoji: "👕", color: "#4aa3df", top: 22, left: 18, w: 64, h: 26 },
-    { id: "pantalon", label: "Pantalón", img: "assets/images/prendas/pantalones.png", emoji: "👖", color: "#5c6bc0", top: 48, left: 24, w: 52, h: 36 },
-    { id: "falda",    label: "Falda",    img: "assets/images/prendas/vestido.png",    emoji: "👗", color: "#f06292", top: 48, left: 19, w: 62, h: 22 },
-    { id: "tenis",    label: "Tenis",    img: "assets/images/prendas/tenis.png",    emoji: "👟", color: "#66bb6a", top: 86, left: 20, w: 60, h: 12 }
+    //{ id: "visera", label: "Visera", icon: P + "visera.png", emoji: "🧢", color: "#ffb74d", z: 5, parts: { nino: [{ img: P + "visera.png", top: 1, left: 22, w: 56, h: 9 }], nina: [{ img: P + "visera.png", top: 1, left: 22, w: 56, h: 9 }] } },
+    { id: "polera", label: "Polera", icon: P + "polera.png", emoji: "👕", color: "#e53935", z: 3, parts: {
+      nino: [{ img: P + "polera.png", top: 36.5, left: 11.5, w: 81, h: 27.36 }],
+      nina: [{ img: P + "polera.png", top: 37, left: 26, w: 52, h: 27.86 }] } },
+    { id: "pantalon", label: "Pantalón", icon: P + "pantalones.png", emoji: "👖", color: "#9e9e9e", z: 1, parts: {
+      nino: [{ img: P + "pantalones.png", top: 59.5, left: 22, w: 60, h: 26.81 }],
+      nina: [{ img: P + "pantalones.png", top: 60.5, left: 29, w: 42, h: 29.76 }] } },
+    { id: "vestido", label: "Vestido", icon: P + "vestido.png", emoji: "👗", color: "#64b5f6", z: 2, parts: {
+      nino: [{ img: P + "vestido.png", top: 37, left: 18.5, w: 68, h: 38.02 }],
+      nina: [{ img: P + "vestido.png", top: 37, left: 28.5, w: 48, h: 42.57 }] } },
+    { id: "tenis", label: "Tenis", icon: P + "tenis.png", emoji: "👟", color: "#ef5350", z: 4, parts: {
+      nino: [{ img: P + "tenis-i.png", top: 90, left: 28.5, w: 17, h: 9.25 }, { img: P + "tenis-d.png", top: 90, left: 60.5, w: 17, h: 9.7 }],
+      nina: [{ img: P + "tenis-i.png", top: 89, left: 32, w: 12, h: 10.36 }, { img: P + "tenis-d.png", top: 89, left: 54.5, w: 12, h: 10.86 }] } }
   ];
   PK.CHARACTERS = CHARACTERS;
   PK.byId = function (list, id) { return list.filter(function (x) { return x.id === id; })[0]; };
@@ -104,16 +118,20 @@
     var st = $("stage");
     st.textContent = "";
     var c = byId(CHARACTERS, S.character || "nino");
+    st.style.aspectRatio = String(c.ratio);        // el recuadro toma la forma exacta del dibujo
     st.appendChild(PK.img(c.img, c.label, function () { return PK.silhouette(c.id); }, "base"));
     S.worn.forEach(function (gid) {
       var g = byId(GARMENTS, gid);
-      var d = document.createElement("div");
-      d.className = "g";
-      d.style.top = g.top + "%"; d.style.left = g.left + "%";
-      d.style.width = g.w + "%"; d.style.height = g.h + "%";
-      d.style.setProperty("--c", g.color);
-      d.appendChild(PK.img(g.img, g.label, g.emoji, ""));
-      st.appendChild(d);
+      (g.parts[c.id] || []).forEach(function (p) {
+        var d = document.createElement("div");
+        d.className = "g";
+        d.style.top = p.top + "%"; d.style.left = p.left + "%";
+        d.style.width = p.w + "%"; d.style.height = p.h + "%";
+        d.style.zIndex = String(g.z || 1);
+        d.style.setProperty("--c", g.color);
+        d.appendChild(PK.img(p.img, g.label, g.emoji, ""));
+        st.appendChild(d);
+      });
     });
     var btns = $("tray").querySelectorAll("[data-g]");
     for (var i = 0; i < btns.length; i++) {
@@ -129,7 +147,7 @@
       b.className = "choice";
       b.setAttribute("data-g", g.id);
       b.setAttribute("aria-pressed", "false");
-      b.appendChild(PK.img(g.img, "", g.emoji, "ico"));
+      b.appendChild(PK.img(g.icon, "", g.emoji, "ico"));
       var t = document.createElement("span");
       t.textContent = g.label;
       b.appendChild(t);
