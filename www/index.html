@@ -179,18 +179,26 @@
   </main>
 
   <main id="reader" class="screen">
+    <button class="back" id="btn-back-stories">📚 Cuentos</button>
     <h2 id="story-title"></h2>
-    <p id="story-text" class="story"></p>
+    <h3 id="story-page-title" class="page-title"></h3>
+    <div id="story-text" class="story"></div>
     <p id="story-page" class="page-count"></p>
+    <div class="progress" aria-hidden="true"><span id="story-bar"></span></div>
+    <button class="big listen" id="btn-story-listen">🔊 Escuchar página</button>
+    <p id="story-audio-msg" class="soft" role="status" aria-live="polite"></p>
     <div class="row">
-      <button class="big secondary" id="btn-prev">⬅</button>
-      <button class="big" id="btn-next">➡</button>
+      <button class="big secondary" id="btn-prev">⬅ Anterior</button>
+      <button class="big" id="btn-next">Siguiente ➡</button>
     </div>
-    <button class="big secondary" id="btn-back-stories">📚 Cuentos</button>
   </main>
+
+  <!-- Música de fondo: se muestra solo si existe assets/audio/musica-fondo.mp3 (ver js/audio.js) -->
+  <button id="btn-music" class="music" aria-label="Música de fondo" hidden>🎵</button>
 
   <script src="js/state.js"></script>
   <script src="js/educadora.js"></script>
+  <script src="js/cuentos.js"></script>
   <script src="js/audio.js"></script>
   <script src="app.js"></script>
   <script src="js/levels12.js"></script>
