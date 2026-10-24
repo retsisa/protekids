@@ -37,7 +37,7 @@
   var el = new Audio();
   var token = 0;
 
-  function talking(on) { if (PK.Educadora) { PK.Educadora.setTalking(on); } }
+  function talking(on) { if (PK.Educadora) { PK.Educadora.setTalking(on); } duck(on); }
 
   function stop() {
     token += 1;
@@ -51,7 +51,7 @@
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !text) { if (done) { done(); } return; }
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "es-ES"; u.rate = 0.9; u.pitch = 1.2;
-      u.onstart = function () { if (my === token) { talking(true); if (PK.Educadora.speakStart) { PK.Educadora.speakStart(text, null, null, u.rate); } } };
+      u.onstart = function () { if (my === token) { talking(true); } };
       u.onend = u.onerror = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
       window.speechSynthesis.speak(u);
     } catch (e) { talking(false); }
@@ -62,10 +62,16 @@
     if (!item) { return; }
     stop();
     var my = token, fell = false;
-    function fallback() { if (fell || my !== token) { return; } fell = true; speak(item.text, my, done); }
+    function fallback() {
+      if (fell || my !== token) { return; }
+      fell = true;
+      var voiceOk = !!(window.speechSynthesis && window.SpeechSynthesisUtterance && item.text);
+      if (item.onFallback) { item.onFallback(voiceOk); }   // p. ej. el lector de cuentos avisa con un mensaje amable
+      speak(item.text, my, done);
+    }
     if (!item.src) { fallback(); return; }
     el.onerror = fallback;
-    el.onplaying = function () { if (my === token) { talking(true); if (PK.Educadora.speakStart) { PK.Educadora.speakStart(item.text, el, item.src); } } };
+    el.onplaying = function () { if (my === token) { talking(true); } };
     el.onended = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
     try {
       el.src = item.src;
@@ -78,6 +84,47 @@
       }
     } catch (e) { fallback(); }
   }
+
+  // ---------- Música de fondo (canal aparte, a propósito: suena junto a la voz, más bajita) ----------
+  // RECURSO PROPIO: coloca tu música aquí -> www/assets/audio/musica-fondo.mp3 (o cambia MUSIC_SRC).
+  // Arranca con el primer toque del niño (Android bloquea el audio antes), va en bucle, baja el volumen
+  // mientras habla la educadora, se pausa si la app pasa a segundo plano y tiene botón para silenciarla.
+  // Si el archivo no existe, no pasa nada: el botón no aparece.
+  var MUSIC_SRC = A + "musica-fondo.mp3", MUSIC_VOL = 0.25, MUSIC_DUCK = 0.08;
+  var bg = null, bgOk = false, bgOn = true;
+  function duck(on) { if (bg) { try { bg.volume = on ? MUSIC_DUCK : MUSIC_VOL; } catch (e) {} } }
+  function musicBtn() { return document.getElementById("btn-music"); }
+  function startMusic() {
+    if (!bgOk || !bgOn || !bg) { return; }
+    try { var p = bg.play(); if (p && p.catch) { p.catch(function () {}); } } catch (e) {}
+  }
+  function initMusic() {
+    try {
+      bg = new Audio();
+      bg.loop = true; bg.volume = MUSIC_VOL;
+      bg.addEventListener("canplay", function () { bgOk = true; var b = musicBtn(); if (b) { b.hidden = false; } });
+      bg.addEventListener("error", function () { bgOk = false; var b = musicBtn(); if (b) { b.hidden = true; } });
+      bg.src = MUSIC_SRC;
+    } catch (e) { bg = null; return; }
+    document.addEventListener("pointerdown", function once() {
+      document.removeEventListener("pointerdown", once);
+      startMusic();
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!bg) { return; }
+      if (document.hidden) { try { bg.pause(); } catch (e) {} } else { startMusic(); }
+    });
+    var b = musicBtn();
+    if (b) {
+      b.addEventListener("click", function () {
+        bgOn = !bgOn;
+        b.textContent = bgOn ? "🎵" : "🔇";
+        b.setAttribute("aria-pressed", bgOn ? "false" : "true");
+        if (bgOn) { startMusic(); } else { try { bg.pause(); } catch (e) {} }
+      });
+    }
+  }
+  initMusic();
 
   PK.Audio = { play: play, stop: stop, say: function (text) { play({ text: text }); } };
 })();
