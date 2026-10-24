@@ -6,35 +6,49 @@
   function cid() { return S.character || "nino"; }
 
   // ====================== CUERPO ======================
-  // Zonas tocables (en % de la silueta). Si cambias la silueta, ajusta aquí top/left/w/h.
-  var ZONES = [
-    { id: "cabeza",   zone: "cabeza",   label: "Cabeza",         top: 0,  left: 34, w: 32, h: 16 },
-    { id: "hombros",  zone: "hombros",  label: "Hombros",        top: 17, left: 16, w: 68, h: 6 },
-    { id: "pecho",    zone: "pecho",    label: "Pecho",          top: 23, left: 30, w: 40, h: 13 },
-    { id: "estomago", zone: "estomago", label: "Estómago",       top: 36, left: 32, w: 36, h: 11 },
-    { id: "intima",   zone: "intima",   label: "Parte íntima",   top: 47, left: 36, w: 28, h: 10 },
-    { id: "brazo_i",  zone: "brazos",   label: "Brazo",          top: 23, left: 6,  w: 12, h: 22 },
-    { id: "brazo_d",  zone: "brazos",   label: "Brazo",          top: 23, left: 82, w: 12, h: 22 },
-    { id: "mano_i",   zone: "manos",    label: "Mano",           top: 45, left: 4,  w: 14, h: 9 },
-    { id: "mano_d",   zone: "manos",    label: "Mano",           top: 45, left: 82, w: 14, h: 9 },
-    { id: "pierna_i", zone: "piernas",  label: "Pierna",         top: 57, left: 30, w: 19, h: 30 },
-    { id: "pierna_d", zone: "piernas",  label: "Pierna",         top: 57, left: 51, w: 19, h: 30 },
-    { id: "pie_i",    zone: "pies",     label: "Pie",            top: 87, left: 28, w: 21, h: 7 },
-    { id: "pie_d",    zone: "pies",     label: "Pie",            top: 87, left: 51, w: 21, h: 7 }
-  ];
+  // Zonas tocables medidas sobre los dibujos reales assets/images/cuerpo/silueta-nino.png y silueta-nina.png.
+  // Cada zona: [id, zona, etiqueta, centroX %, centroY %, ancho %, alto %]  (% del PNG de la silueta).
+  // ratio = ancho / alto del PNG (132x386 y 175x515). Si cambias una silueta, actualiza ratio y estos números.
+  var BODY = {
+    nino: { ratio: 132 / 386, zones: [
+      ["cabeza", "cabeza", "Cabeza", 51, 16.7, 78, 30.5],
+      ["hombro_i", "hombros", "Hombro", 19, 37.5, 22, 9], ["hombro_d", "hombros", "Hombro", 81, 37.5, 22, 9],
+      ["pecho", "pecho", "Pecho", 50, 42.7, 44, 11.5],
+      ["estomago", "estomago", "Estómago", 50, 54.2, 44, 11.5],
+      ["intima", "intima", "Parte íntima", 50, 66.2, 32, 9.5],
+      ["brazo_i", "brazos", "Brazo", 17.5, 51.5, 19, 17], ["brazo_d", "brazos", "Brazo", 85, 51.5, 20, 17],
+      ["mano_i", "manos", "Mano", 13.5, 66.5, 15, 13], ["mano_d", "manos", "Mano", 88, 66.5, 16, 13],
+      ["pierna_i", "piernas", "Pierna", 38, 81, 22, 16], ["pierna_d", "piernas", "Pierna", 67.5, 81, 22, 16],
+      ["pie_i", "pies", "Pie", 27, 94.5, 34, 10], ["pie_d", "pies", "Pie", 76.5, 94.5, 33, 10]
+    ] },
+    nina: { ratio: 175 / 515, zones: [
+      ["cabeza", "cabeza", "Cabeza", 47, 16.5, 87, 30],
+      ["hombro_i", "hombros", "Hombro", 30, 38.5, 16, 11], ["hombro_d", "hombros", "Hombro", 84.5, 38.5, 17, 11],
+      ["pecho", "pecho", "Pecho", 59, 41, 40, 10],
+      ["estomago", "estomago", "Estómago", 59, 51.8, 40, 10.5],
+      ["intima", "intima", "Parte íntima", 59, 62, 30, 10],
+      ["brazo_i", "brazos", "Brazo", 24, 50.5, 17, 11], ["brazo_d", "brazos", "Brazo", 88, 50.5, 16, 11],
+      ["mano_i", "manos", "Mano", 13, 61, 16, 10], ["mano_d", "manos", "Mano", 94, 61, 12, 10],
+      ["pierna_i", "piernas", "Pierna", 43, 77, 18, 18], ["pierna_d", "piernas", "Pierna", 69, 77, 18, 18],
+      ["pie_i", "pies", "Pie", 36, 94.5, 28, 9], ["pie_d", "pies", "Pie", 77.5, 94.5, 29, 9]
+    ] }
+  };
 
   function buildBody(st, id, opts) {
     st.textContent = "";
+    var body = BODY[id] || BODY.nino;
+    st.style.aspectRatio = String(body.ratio);     // el recuadro toma la forma exacta de la silueta
     // CAMBIAR IMAGEN DE LA SILUETA AQUÍ: assets/images/cuerpo/silueta-nino.png y silueta-nina.png
     st.appendChild(PK.img("assets/images/cuerpo/silueta-" + id + ".png", "Silueta", function () { return PK.silhouette(id); }, "base"));
-    ZONES.forEach(function (z) {
+    body.zones.forEach(function (zz) {
+      var z = { id: zz[0], zone: zz[1], label: zz[2] };
       if (opts.highlight && opts.highlight.indexOf(z.zone) === -1) { return; }
       var b = document.createElement("button");
       b.type = "button";
       b.className = "zone";
       b.setAttribute("data-zone", z.id);
       b.setAttribute("aria-label", z.label);
-      b.style.top = z.top + "%"; b.style.left = z.left + "%"; b.style.width = z.w + "%"; b.style.height = z.h + "%";
+      b.style.left = zz[3] + "%"; b.style.top = zz[4] + "%"; b.style.width = zz[5] + "%"; b.style.height = zz[6] + "%";
       if (opts.highlight) { b.disabled = true; b.classList.add("z-here"); }
       else { b.addEventListener("click", function () { opts.tap(z, b); }); }
       st.appendChild(b);
