@@ -84,24 +84,9 @@
     render(st.id);
   });
 
-  // ----- Cuentos (se conserva sin cambios de contenido) -----
-  var STORIES = [
-    { title: "Mi cuerpo es mío", pages: [
-      "Luna tiene un cuerpo muy especial. Tiene manitas, piernas, cabeza y un corazón grande.",
-      "Luna sabe que su cuerpo es suyo. Nadie puede tocarla si ella no quiere.",
-      "Un día, alguien quiso tocarla y ella dijo: ¡NO! y se alejó rápidamente.",
-      "Luna corrió a contarle a su mamá. Su mamá la abrazó y le dijo: ¡Qué valiente eres!"] },
-    { title: "Mis personas de confianza", pages: [
-      "Tomás tiene personas que lo cuidan: mamá, papá, su abuela y su profesora.",
-      "Si algo lo hace sentir triste, asustado o incómodo, Tomás se lo cuenta a alguien de confianza.",
-      "Tomás sabe que contar no es chismear. Contar es cuidarse.",
-      "Y siempre hay alguien que lo escucha con mucho cariño."] },
-    { title: "El semáforo del cuerpo", pages: [
-      "Verde: un abrazo de mamá o un saludo de manos. Se puede si tú quieres y te sientes bien.",
-      "Amarillo: si alguien necesita tocar una zona, como el doctor, debe avisarte y debe estar un adulto de confianza.",
-      "Rojo: las partes privadas son solo tuyas. Nadie debe tocarlas ni verlas.",
-      "Si alguien lo intenta, di NO fuerte, aléjate y cuéntaselo a tu adulto de confianza."] }
-  ];
+  // ----- Cuentos -----
+  // Los datos (texto + audio de cada página) están en js/cuentos.js -> PK.STORIES.
+  var STORIES = PK.STORIES || [];
   var current = { story: 0, page: 0 };
 
   function renderList() {
@@ -109,17 +94,46 @@
     list.textContent = "";
     STORIES.forEach(function (story, index) {
       var btn = document.createElement("button");
-      btn.className = "big";
-      btn.textContent = story.title;
+      btn.className = "story-card";
+      var h = document.createElement("strong"); h.textContent = story.title;
+      var d = document.createElement("span"); d.textContent = story.description || "";
+      btn.appendChild(h); btn.appendChild(d);
       btn.addEventListener("click", function () { current.story = index; current.page = 0; renderPage(); PK.go("reader"); });
       list.appendChild(btn);
     });
   }
+
   function renderPage() {
-    var s = STORIES[current.story];
+    PK.Audio.stop();                                   // al cambiar de página se detiene el audio anterior
+    var s = STORIES[current.story], p = s.pages[current.page], total = s.pages.length;
     $("story-title").textContent = s.title;
-    $("story-text").textContent = s.pages[current.page];
-    $("story-page").textContent = (current.page + 1) + " / " + s.pages.length;
+    $("story-page-title").textContent = p.title || "";
+    var box = $("story-text");
+    box.textContent = "";
+    p.text.split("\n").forEach(function (line) {      // párrafos cortos
+      if (!line.trim()) { return; }
+      var para = document.createElement("p"); para.textContent = line; box.appendChild(para);
+    });
+    $("story-page").textContent = "Página " + (current.page + 1) + " de " + total;
+    $("story-bar").style.width = Math.round(((current.page + 1) / total) * 100) + "%";
+    $("story-audio-msg").textContent = "";
+    $("btn-prev").disabled = current.page === 0;
+    $("btn-next").disabled = current.page === total - 1;
+  }
+
+  // Escuchar la página: usa el reproductor de js/audio.js (nunca se superponen dos audios).
+  function listenPage() {
+    var p = STORIES[current.story].pages[current.page], msg = $("story-audio-msg");
+    msg.textContent = "";
+    PK.Audio.play({
+      src: p.audio || null,
+      text: p.text.replace(/\n/g, " "),
+      onFallback: function (voiceOk) {                // el archivo no existe o falló
+        msg.textContent = voiceOk
+          ? "Todavía no tengo la voz grabada de esta página. ¡Te la leo con la voz del teléfono!"
+          : "No pude reproducir el audio, ¡pero puedes leer el cuento!";
+      }
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -129,9 +143,9 @@
     $("btn-back-home").addEventListener("click", function () { PK.go("welcome"); });
     $("btn-back-stories").addEventListener("click", function () { PK.go("stories"); });
     $("btn-prev").addEventListener("click", function () { if (current.page > 0) { current.page -= 1; renderPage(); } });
+    $("btn-story-listen").addEventListener("click", listenPage);
     $("btn-next").addEventListener("click", function () {
       if (current.page < STORIES[current.story].pages.length - 1) { current.page += 1; renderPage(); }
-      else { PK.go("stories"); }
     });
     var backs = document.querySelectorAll("[data-back]");
     for (var i = 0; i < backs.length; i++) { backs[i].addEventListener("click", PK.back); }
