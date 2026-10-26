@@ -41,7 +41,7 @@
         { title: "Las cosquillas que no", audio: A + "lia_p04.mp3",
           text: "Jugando con su primo, él empezó a hacerle cosquillas. Al principio era divertido, pero luego a Lía ya no le gustó.\n«¡Para, por favor!», dijo ella, apretando su botón.\nSu primo paró enseguida. «Perdón», dijo. Cuando alguien respeta tu NO, el juego puede seguir bonito." },
         { title: "Cuando no paran", audio: A + "lia_p05.mp3",
-          text: "Otro día, un chico del barrio no dejaba de molestarla, aunque ella dijo NO varias veces.\nLía sintió calor en las mejillas. Recordó su botón y gritó: «¡NO!».\nLuego se alejó, porque alejarse también es una buena idea, y corrió a buscar a papá. Si alguien no respeta tu NO, nunca es tu culpa." },
+          text: "Otro día, un chico del barrio no dejaba de molestarla, aunque ella dijo NO varias veces.\nLía sintió calor en las mejillas. Recordó su botón y gritó: «¡NO!».\nLuego se alejó, porque alejarse también es una buena idea, y corrió a buscar a papá." },
         { title: "Papá escucha", audio: A + "lia_p06.mp3",
           text: "Papá se arrodilló para escucharla. «Hiciste todo bien, Lía. Estoy orgulloso de ti. Voy a ayudarte».\nLía respiró tranquila. Sabía que podía contarle cualquier cosa.\nDesde entonces, cada vez que algo no le gusta, Lía aprieta su botón invisible, se aleja si puede y se lo cuenta a un adulto de confianza." }
       ]
