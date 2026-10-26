@@ -99,7 +99,7 @@
     },
     extrano: {
       a: "Solo un saludo, si tú quieres y tu adulto de confianza está contigo. Puedes decir NO.",
-      r: "¡Alto! Una persona desconocida no debe tocarte aquí. Di NO, aléjate y cuéntale a un adulto de confianza. ¡No es tu culpa!"
+      r: "¡Alto! Una persona desconocida no debe tocarte aquí. Di NO, aléjate y cuéntale a un adulto de confianza."
     }
   };
   var COMMON_RED = "¡Alto! Esta parte es solo tuya. Nadie debe tocarla. Di NO, aléjate y cuéntale a un adulto de confianza. ¡No es tu culpa!";
