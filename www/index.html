@@ -1,185 +1,229 @@
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-:root { --pink: #ff6fa5; --pink-d: #d94a82; --skin: #ffddbf; }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ProteKids</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-html, body { margin: 0; min-height: 100%; background: #fff0f6; color: #4a2040;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-body { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  <!-- ===== BIENVENIDA ===== -->
+  <main id="welcome" class="screen active">
+    <!-- RECURSO PROPIO: coloca aquí el logotipo -> www/assets/images/logo.png (para otro nombre, cambia data-img) -->
+    <span data-img="assets/images/logo.png" data-alt="ProteKids" data-fb="ProteKids" data-cls="logo"></span>
+    <p class="tagline">Pequeñas voces, grandes derechos</p>
+    <!-- RECURSO PROPIO: ilustración de la educadora -> www/assets/images/educadora.png -->
+    <div class="edu" id="edu-welcome"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">¡Hola, hola! ¿Cómo estás? Yo muy bien, ¿y tú qué tal?</p>
+    <button class="big" id="btn-listen">🔊 Escuchar a ProteKids</button>
+    <p class="question">¿Cómo te sientes hoy?</p>
+    <div class="row choices">
+      <!-- CAMBIAR IMAGEN DEL ESTADO FELIZ AQUÍ: assets/images/emociones/feliz.png (data-img del primer botón) -->
+      <!-- CAMBIAR IMAGEN DEL ESTADO AGOTADO AQUÍ: assets/images/emociones/triste.png (data-img del segundo botón) -->
+      <button class="choice" data-mood="bien"><span data-img="assets/images/emociones/feliz.png" data-alt="" data-fb="😊" data-cls="ico"></span><span>Bien</span></button>
+      <button class="choice" data-mood="mal"><span data-img="assets/images/emociones/triste.png" data-alt="" data-fb="😢" data-cls="ico"></span><span>Mal</span></button>
+    </div>
+    <button class="link" id="btn-stories">📖 Cuentos</button>
+    <button class="link" id="btn-adults">👨‍👩‍👧 Zona de adultos</button>
+  </main>
 
-.screen { display: none; min-height: 100vh; padding: 20px 16px; flex-direction: column;
-  align-items: center; text-align: center; gap: 14px; }
-.screen.active { display: flex; }
+  <!-- ===== NIVEL 1 ===== -->
+  <main id="level1" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 1 · ¿Quién soy?</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">¡Vamos a elegir! ¿Quieres jugar con el niño o con la niña?</p>
+    <button class="link" data-say="nivel1">🔊 Escuchar</button>
+    <div class="row choices" id="char-list"></div>
+    <p id="char-msg" class="soft"></p>
+    <button class="big" id="btn-l1-next" disabled>Continuar ➡</button>
+  </main>
 
-h1 { font-size: 2.6rem; margin: 8px 0 0; color: #ff4f93; }
-h2 { font-size: 1.7rem; margin: 6px 0; color: #ff4f93; }
-.tagline { font-size: 1.15rem; margin: 0; color: #c2547f; font-weight: 600; }
-.hero { font-size: 6rem; margin: 12px 0; }
-.hello { font-size: 1.3rem; margin: 0; max-width: 460px; }
-.question { font-size: 1.4rem; font-weight: 700; margin: 6px 0 0; }
-.soft { font-size: 1.1rem; color: #c2547f; margin: 0; min-height: 1.4em; }
+  <!-- ===== CONFIRMACIÓN ===== -->
+  <main id="confirm" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <div id="confirm-img" class="confirm-img"></div>
+    <h2>¿Estás listo para comenzar?</h2>
+    <button class="link" data-say="listo">🔊 Escuchar</button>
+    <div class="row choices">
+      <button class="choice yes" id="btn-ready-yes"><span class="mark">✔</span><span>Sí, estoy listo</span></button>
+      <button class="choice no" id="btn-ready-no"><span class="mark">✖</span><span>Todavía no</span></button>
+    </div>
+    <div id="notready" class="panel" hidden>
+      <p>¡No hay problema! Tómate el tiempo que necesites.</p>
+      <p id="wait-msg" class="soft" hidden>Aquí te espero. Cuando quieras, toca «Sí, estoy listo».</p>
+      <button class="big secondary" data-say="listo">🔊 Escuchar otra vez</button>
+      <button class="big secondary" id="btn-wait">⏳ Esperar un poquito</button>
+      <button class="big secondary" id="btn-retry">🔁 Volver a intentarlo</button>
+    </div>
+  </main>
 
-.big { width: 100%; max-width: 420px; min-height: 60px; padding: 12px 20px; border: none; border-radius: 30px;
-  background: var(--pink); color: #fff; font-size: 1.25rem; font-weight: 700; box-shadow: 0 4px 0 var(--pink-d); }
-.big:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pink-d); }
-.big.secondary { background: #b39ddb; box-shadow: 0 4px 0 #8e75bd; }
-.big:disabled { opacity: .45; box-shadow: none; }
+  <!-- ===== NIVEL 2 ===== -->
+  <main id="level2" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 2 · ¿Qué prendas de vestir usas?</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello">¡Vamos a vestir a nuestro personaje! Elige las prendas que más te gusten.</p>
+    <button class="link" data-say="nivel2">🔊 Escuchar</button>
+    <div class="stage" id="stage"></div>
+    <div class="tray" id="tray"></div>
+    <div class="row">
+      <button class="big secondary" id="btn-undo">↩ Quitar última</button>
+      <button class="big secondary" id="btn-reset">🔄 Reiniciar</button>
+    </div>
+    <button class="big" id="btn-l2-next">Continuar ➡</button>
+  </main>
 
-.back { align-self: flex-start; min-height: 48px; padding: 8px 18px; border: none; border-radius: 24px;
-  background: #fff; color: #8e75bd; font-size: 1.1rem; font-weight: 700; box-shadow: 0 2px 0 #e3d8f3; }
-.link { min-height: 48px; padding: 8px 18px; border: none; background: transparent; color: #8e75bd;
-  font-size: 1.1rem; font-weight: 700; text-decoration: underline; }
+  <!-- ===== NIVEL 3 ===== -->
+  <main id="level3" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 3 · Partes de mi cuerpo</h2>
+    <div class="edu small"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <p class="hello" id="l3-question"></p>
+    <div class="row persona">
+      <button class="big secondary" data-persona="mama">Mamá</button>
+      <button class="big secondary" data-persona="educadora">Educadora</button>
+      <button class="big secondary" data-persona="extrano">Desconocida</button>
+    </div>
+    <button class="link" id="btn-l3-say">🔊 Escuchar</button>
+    <div class="stage big-stage" id="body-stage"></div>
+    <p class="soft">Las partes que cubre tu ropa de baño son privadas: son solo tuyas.</p>
+    <div id="l3-result" class="panel result" role="status" aria-live="polite">Toca una parte del cuerpo.</div>
+    <button class="big" id="btn-l3-next">Continuar ➡</button>
+  </main>
 
-.list { display: flex; flex-direction: column; gap: 14px; width: 100%; align-items: center; }
-.story { font-size: 1.4rem; line-height: 1.6; background: #fff; border-radius: 24px; padding: 20px;
-  max-width: 480px; width: 100%; margin: 0; }
-.page-count { margin: 0; color: #c2547f; }
-.row { display: flex; gap: 12px; width: 100%; max-width: 420px; }
-.row .big { flex: 1; font-size: 1.05rem; padding: 10px; }
+  <!-- ===== NIVEL 3 (parte 2): PREGUNTAS ===== -->
+  <main id="level3b" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 3 · Aprendo a decir NO</h2>
+    <p id="quiz-progress" class="soft"></p>
+    <p id="quiz-q" class="hello"></p>
+    <button class="link" id="btn-quiz-say">🔊 Escuchar</button>
+    <div class="opts" id="quiz-opts"></div>
+    <div id="quiz-fb" class="panel result" role="status" aria-live="polite" hidden></div>
+    <button class="big" id="btn-quiz-next" disabled>Siguiente ➡</button>
+  </main>
 
-/* Logo y recursos con alternativa */
-.logo { max-width: 70%; max-height: 120px; object-fit: contain; }
-.fb.logo { font-size: 2.6rem; font-weight: 800; color: #ff4f93; }
-.fb { display: inline-block; }
+  <!-- ===== ACTIVIDAD: ¿QUÉ SITUACIÓN TE INCOMODA? ===== -->
+  <main id="situations" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>¿Qué situación te incomoda?</h2>
+    <p class="hello">Toca la situación que haría sentir incómodo a nuestro personaje.</p>
+    <button class="link" data-say="situaciones">🔊 Escuchar</button>
+    <div class="cards" id="sit-list"></div>
+    <div id="sit-result" class="panel result" role="status" aria-live="polite" hidden></div>
+    <div id="sit-actions" class="panel" hidden>
+      <p><strong>¿Qué podría hacer?</strong></p>
+      <div class="opts">
+        <button class="opt" data-act="no">✋ Decir «NO»</button>
+        <button class="opt" data-act="alejar">🚶 Alejarme si puedo</button>
+        <button class="opt" data-act="contar">🗣️ Contárselo a un adulto de confianza</button>
+      </div>
+      <p id="act-msg" class="soft"></p>
+    </div>
+    <button class="big" id="btn-sit-next" disabled>Continuar ➡</button>
+  </main>
 
-/* Educadora */
-.edu { display: inline-block; transform-origin: 50% 100%;
-  animation: edu-in .8s ease-out both, edu-sway 3s ease-in-out .8s infinite; }
-.edu-img { height: min(38vh, 330px); max-width: 80vw; object-fit: contain; }
-.edu.small .edu-img { height: 110px; }
-.fb.edu-img { font-size: 7rem; line-height: 1.1; }
-.edu.small .fb.edu-img { font-size: 4rem; }
-.edu.talking { animation: edu-in .8s ease-out both, edu-talk .35s ease-in-out infinite alternate; }
-.edu.wave { animation: edu-in .8s ease-out both, edu-wave 1s ease-in-out 2; }
-@keyframes edu-in { from { opacity: 0; transform: translateY(30px) scale(.9); } to { opacity: 1; transform: none; } }
-@keyframes edu-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-@keyframes edu-talk { from { transform: translateY(0); } to { transform: translateY(-8px) scale(1.02); } }
-@keyframes edu-wave { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
-@media (prefers-reduced-motion: reduce) { .edu, .edu.talking, .edu.wave { animation: none; } }
-/* Con el personaje animado por canvas (js/educadora.js) el movimiento lo hace el código, no el CSS */
-.edu.rig, .edu.rig.talking, .edu.rig.wave { animation: edu-in .8s ease-out both; }
-.edu.rig.talking::before { display: none; }
-.edu-canvas { display: block; width: auto; max-width: none; }
+  <!-- ===== PAUSA: ROMPECABEZAS ===== -->
+  <main id="puzzle" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Pausa · Rompecabezas</h2>
+    <p class="hello">Toca una pieza y luego otra para cambiarlas de lugar.</p>
+    <button class="link" data-say="puzzle">🔊 Escuchar</button>
+    <p id="puzzle-progress" class="soft"></p>
+    <div id="puzzle-board" class="puzzle-board"></div>
+    <p id="puzzle-msg" class="soft"></p>
+    <button class="big secondary" id="btn-shuffle">🔀 Mezclar de nuevo</button>
+    <button class="big" id="btn-pz-next" disabled>Ver mensaje final ➡</button>
+    <button class="link" id="btn-pz-skip">Saltar rompecabezas</button>
+  </main>
 
-/* Opciones grandes */
-.choices { justify-content: center; flex-wrap: wrap; }
-.choice { flex: 1 1 140px; min-height: 120px; max-width: 200px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 6px; padding: 12px; border: 4px solid transparent;
-  border-radius: 24px; background: #fff; color: #4a2040; font-size: 1.1rem; font-weight: 700;
-  box-shadow: 0 4px 0 #f0cfe0; }
-.choice:active { transform: translateY(3px); }
-.choice.selected { border-color: var(--pink); background: #ffe3ef; }
-.choice .ico { height: 72px; max-width: 100%; object-fit: contain; }
-.choice .fb.ico { font-size: 3.4rem; line-height: 72px; }
-.choice .mark { font-size: 3rem; line-height: 1; }
-.choice.yes .mark { color: #43a047; }
-.choice.no .mark { color: #e57373; }
-.choice .charbox { width: 90px; height: 160px; position: relative; }
-.choice .charbox img { width: 100%; height: 100%; object-fit: contain; }
+  <!-- ===== NIVEL 4 ===== -->
+  <main id="level4" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>Nivel 4 · Si alguien te toca aquí o hace algo que te incomoda, ¿a quién se lo contarías?</h2>
+    <div class="stage mini" id="mini-stage"></div>
+    <p class="soft">Puedes elegir a una o más personas. Si esa persona no te escucha o no te ayuda, ¡busca a otra!</p>
+    <button class="link" data-say="nivel4">🔊 Escuchar</button>
+    <div class="tray" id="trust-list"></div>
+    <p id="trust-msg" class="soft"></p>
+    <button class="big" id="btn-l4-next" disabled>Continuar ➡</button>
+  </main>
 
-.panel { background: #fff; border-radius: 24px; padding: 16px; width: 100%; max-width: 440px;
-  display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.panel[hidden], [hidden] { display: none !important; }
+  <main id="feelings" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>¿Y cómo te sientes ahora?</h2>
+    <button class="link" data-say="sentiste">🔊 Escuchar</button>
+    <div class="tray" id="feel-list"></div>
+    <p id="feel-msg" class="soft"></p>
+    <button class="big" id="btn-f-next" disabled>Continuar ➡</button>
+  </main>
 
-/* Silueta provisional (si falta nino.png / nina.png): ropa de baño neutra, sin detalles */
-.sil { position: relative; width: 100%; height: 100%; min-height: 120px; }
-.sil::before { content: ""; position: absolute; left: 34%; top: 3%; width: 32%; height: 16%;
-  border-radius: 50%; background: var(--skin); z-index: 2; }
-.sil::after { content: ""; position: absolute; left: 24%; top: 20%; width: 52%; height: 74%;
-  border-radius: 30% 30% 18% 18%; background: var(--skin); z-index: 1; }
-.sil i { position: absolute; left: 31%; top: 0; width: 38%; height: 11%; border-radius: 50% 50% 0 0; background: #4a2c1a; z-index: 3; }
-.sil.nina i { left: 27%; width: 46%; height: 32%; border-radius: 45%; z-index: 0; }
-.sil b { position: absolute; left: 24%; top: 44%; width: 52%; height: 17%; border-radius: 8px; background: #4aa3df; z-index: 2; }
+  <!-- ===== DESPEDIDA ===== -->
+  <main id="end" class="screen">
+    <div class="edu" id="edu-end"><span data-img="assets/images/educadora.png" data-alt="Educadora ProteKids" data-fb="👩‍🏫" data-cls="edu-img"></span></div>
+    <h2>🎉 ¡Felicidades, completaste ProteKids!</h2>
+    <p class="hello">ProteKids te enseña a amar, respetar y cuidar tu cuerpo. Si algo te incomoda, ¡cuéntaselo a un adulto de confianza!</p>
+    <p class="hello"><strong>¡Protege tu cuerpo, alza tu voz y vive feliz y seguro!</strong></p>
+    <p class="hello">¡Gracias por visitarnos! ¡Hasta una próxima aventura con ProteKids!</p>
+    <button class="link" data-say="despedida">🔊 Escuchar</button>
+    <button class="big" id="btn-again">🏠 Volver al inicio</button>
+    <button class="big secondary" id="btn-end-stories">📖 Cuentos</button>
+  </main>
 
-/* Vestidor */
-.stage { position: relative; height: min(56vh, 470px); aspect-ratio: 1 / 2; background: #fff; border-radius: 24px; }
-.stage .base { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.g { position: absolute; }
-.g img { width: 100%; height: 100%; object-fit: contain; }
-.g .fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  background: var(--c); border-radius: 12px; font-size: 1.4rem; opacity: .93; }
-.tray { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; max-width: 460px; }
-.tray .choice { flex: 0 0 96px; min-height: 100px; font-size: .95rem; padding: 8px; }
-.tray .ico { height: 48px; }
-.tray .fb.ico { font-size: 2.2rem; line-height: 48px; }
+  <!-- ===== ZONA DE ADULTOS ===== -->
+  <main id="adults" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>👨‍👩‍👧 Zona de adultos</h2>
+    <div id="adult-gate" class="panel">
+      <p>Para entrar, resuelve esta operación:</p>
+      <p id="gate-q" class="gate-q"></p>
+      <input id="gate-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="Respuesta de la operación">
+      <p id="gate-msg" class="soft" role="status" aria-live="polite"></p>
+      <button class="big" id="btn-gate">Entrar</button>
+    </div>
+    <div id="adult-results" hidden>
+      <p id="adult-date" class="soft"></p>
+      <div id="adult-body" class="adult-body"></div>
+      <p class="note">Estas respuestas son solo del juego: <strong>no son un diagnóstico ni una evaluación</strong>. Se guardan únicamente en este teléfono. Si algo le preocupa, escuche al niño con calma, sin presionarlo ni interrogarlo, y busque la ayuda de un profesional o de la persona responsable de protección infantil.</p>
+      <button class="big secondary" id="btn-adult-clear">🗑 Borrar resultados</button>
+      <button class="big" id="btn-adult-exit">Salir de la zona de adultos</button>
+    </div>
+  </main>
 
-/* ===== Etapa 2: confirmación, cuerpo, rompecabezas, nivel 4 ===== */
-.confirm-img { height: min(42vh, 360px); display: flex; justify-content: center; align-items: center; }
-.confirm-pic { height: 100%; max-width: 90vw; object-fit: contain; }
-.sil-wrap { position: relative; height: 100%; aspect-ratio: 1 / 2; }
-.sil-wrap .badge { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); font-size: 2.4rem; z-index: 5; }
-.sil u { position: absolute; left: 8%; top: 23%; width: 84%; height: 22%; border-radius: 14px; background: var(--skin); z-index: 0; }
+  <!-- ===== CUENTOS (se conserva) ===== -->
+  <main id="stories" class="screen">
+    <h2>Cuentos</h2>
+    <div id="story-list" class="list"></div>
+    <button class="big secondary" id="btn-back-home">⬅ Inicio</button>
+  </main>
 
-/* música/"voz": notas flotando mientras la educadora habla (movimiento decorativo, no sincronía labial) */
-.edu { position: relative; }
-.edu.talking::before { content: "♪  ♫"; position: absolute; top: 4%; right: -6%; font-size: 1.6rem; color: #ff4f93;
-  animation: notes 1.1s ease-in-out infinite; }
-@keyframes notes { 0% { transform: translateY(6px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .edu.talking::before { animation: none; } }
+  <main id="reader" class="screen">
+    <button class="back" id="btn-back-stories">📚 Cuentos</button>
+    <h2 id="story-title"></h2>
+    <h3 id="story-page-title" class="page-title"></h3>
+    <div id="story-text" class="story"></div>
+    <p id="story-page" class="page-count"></p>
+    <div class="progress" aria-hidden="true"><span id="story-bar"></span></div>
+    <button class="big listen" id="btn-story-listen">🔊 Escuchar página</button>
+    <p id="story-audio-msg" class="soft" role="status" aria-live="polite"></p>
+    <div class="row">
+      <button class="big secondary" id="btn-prev">⬅ Anterior</button>
+      <button class="big" id="btn-next">Siguiente ➡</button>
+    </div>
+  </main>
 
-.persona { gap: 6px; }
-.persona .big { font-size: .95rem; padding: 8px 4px; min-height: 52px; }
-.persona .big.on { background: var(--pink); box-shadow: 0 4px 0 var(--pink-d); }
-.big-stage { height: min(62vh, 520px); }
-.mini { height: 260px; }
-.zone { position: absolute; transform: translate(-50%, -50%); min-width: 34px; min-height: 34px; padding: 0; border: 2px dashed rgba(74, 44, 26, .35); border-radius: 10px;
-  background: rgba(255, 255, 255, .2); z-index: 5; }
-.zone.z-verde { background: rgba(76, 175, 80, .75); border: 3px solid #2e7d32; }
-.zone.z-amarillo { background: rgba(255, 193, 7, .8); border: 3px solid #f9a825; }
-.zone.z-rojo { background: rgba(229, 57, 53, .8); border: 3px solid #b71c1c; }
-.zone.z-here { min-width: 0; min-height: 0; background: rgba(229, 57, 53, .35); border: 3px solid #e53935; animation: here 1s ease-in-out infinite alternate; }
-@keyframes here { from { opacity: .5; } to { opacity: 1; } }
-.result { font-size: 1.15rem; font-weight: 600; min-height: 90px; justify-content: center; }
-.result.res-verde { background: #e1f5e2; border: 3px solid #43a047; }
-.result.res-amarillo { background: #fff6d6; border: 3px solid #f9a825; }
-.result.res-rojo { background: #fde3e2; border: 3px solid #e53935; }
+  <!-- Música de fondo: se muestra solo si existe assets/audio/musica-fondo.mp3 (ver js/audio.js) -->
+  <button id="btn-music" class="music" aria-label="Música de fondo" hidden>🎵</button>
 
-.puzzle-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; width: min(86vw, 340px);
-  aspect-ratio: 1 / 1; background: #fff; padding: 3px; border-radius: 16px; }
-.piece { border: 3px solid transparent; border-radius: 8px; padding: 0; background-color: #ffe3ef;
-  background-repeat: no-repeat; background-size: 300% 300%; font-size: 1.6rem; font-weight: 800; color: #fff; }
-.piece.ok { border-color: #66bb6a; }
-.piece.sel { border-color: var(--pink); transform: scale(.94); }
-.piece:disabled { opacity: 1; }
-
-/* ===== Preguntas, situaciones ===== */
-.opts, .cards { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 460px; }
-.opt { min-height: 64px; padding: 12px 16px; border: 4px solid transparent; border-radius: 20px; background: #fff;
-  color: #4a2040; font-size: 1.1rem; font-weight: 700; text-align: left; box-shadow: 0 3px 0 #f0cfe0; }
-.opt.selected { border-color: var(--pink); background: #ffe3ef; }
-.card { display: flex; align-items: center; gap: 12px; min-height: 90px; padding: 12px; border: 4px solid transparent;
-  border-radius: 20px; background: #fff; color: #4a2040; font-size: 1.05rem; font-weight: 600; text-align: left; box-shadow: 0 3px 0 #f0cfe0; }
-.card.selected { border-color: var(--pink); background: #ffe3ef; }
-.card .ico { height: 64px; width: 64px; object-fit: contain; flex: none; }
-.card .fb.ico { font-size: 2.6rem; line-height: 64px; text-align: center; }
-
-/* ===== Cuentos (lector) ===== */
-.story-card { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 440px; min-height: 76px;
-  padding: 14px 18px; border: none; border-radius: 24px; background: var(--pink); color: #fff; text-align: left;
-  box-shadow: 0 4px 0 var(--pink-d); }
-.story-card strong { font-size: 1.25rem; }
-.story-card span { font-size: 1rem; opacity: .95; }
-.story-card:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pink-d); }
-.page-title { margin: 0; font-size: 1.3rem; color: #8e75bd; }
-.story { text-align: left; font-size: 1.3rem; line-height: 1.7; }
-.story p { margin: 0 0 .8em; }
-.story p:last-child { margin-bottom: 0; }
-.progress { width: 100%; max-width: 480px; height: 10px; background: #f0cfe0; border-radius: 6px; overflow: hidden; }
-.progress span { display: block; height: 100%; width: 0; background: var(--pink); transition: width .3s; }
-.big.listen { background: #43a047; box-shadow: 0 4px 0 #2e7d32; }
-.music { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 8px); right: calc(env(safe-area-inset-right, 0px) + 8px);
-  z-index: 50; width: 48px; height: 48px; border: none; border-radius: 50%; background: #fff; font-size: 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .2); }
-.music[hidden] { display: none; }
-
-/* ===== Zona de adultos ===== */
-.gate-q { font-size: 2.4rem; font-weight: 800; color: #ff4f93; margin: 4px 0; }
-#gate-input { width: 150px; font-size: 2rem; text-align: center; padding: 10px; border: 3px solid #d9c3f0; border-radius: 16px; color: #4a2040; }
-.adult-body { width: 100%; max-width: 520px; text-align: left; }
-.res-sec { background: #fff; border-radius: 18px; padding: 12px 16px; margin-bottom: 10px; }
-.res-sec h3 { margin: 0 0 6px; font-size: 1.05rem; color: #8e75bd; }
-.res-sec ul { margin: 0; padding-left: 20px; line-height: 1.55; }
-.res-sec .sub { font-weight: 700; margin: 8px 0 2px; }
-.res-sec .none { color: #999; margin: 0; }
-.note { max-width: 520px; font-size: .95rem; color: #6b4a63; background: #fff6d6; border-radius: 14px; padding: 10px 14px; text-align: left; }
-#adult-results { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
-#adult-results[hidden] { display: none; }
+  <script src="js/state.js"></script>
+  <script src="js/educadora.js"></script>
+  <script src="js/cuentos.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="app.js"></script>
+  <script src="js/levels12.js"></script>
+  <script src="js/levels34.js"></script>
+  <script src="js/adultos.js"></script>
+</body>
+</html>
