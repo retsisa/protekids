@@ -13,7 +13,7 @@
     // CAMBIAR AUDIO DE BIENVENIDA AQUÍ (identificador: bienvenida)
     bienvenida: { src: A + "bienvenida.mp3", text: "¡Hola, hola! ¿Cómo estás? Yo muy bien, ¿y tú qué tal? ¿Cómo te sientes hoy?" },
     // CAMBIAR AUDIO DEL NIVEL 1 AQUÍ (identificador: nivel1)
-    nivel1: { src: A + "educadora/nivel1.mp3", text: "¡Vamos a elegir! ¿Quieres jugar con el niño o con la niña?" },
+    nivel1: { src: A + "educadora/nivel1.mp3", text: "¿eres niño o niña?" },
     // CAMBIAR AUDIO DE CONFIRMACIÓN AQUÍ (identificador: listo)
     listo: { src: A + "educadora/listo.mp3", text: "¿Estás listo para comenzar? Elige sí si quieres empezar o todavía no si necesitas un poquito más de tiempo." },
     // CAMBIAR AUDIO DEL NIVEL 2 AQUÍ (identificador: nivel2)
