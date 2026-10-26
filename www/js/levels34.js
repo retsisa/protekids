@@ -5,6 +5,12 @@
   var CHARS = PK.CHARACTERS;
   function cid() { return S.character || "nino"; }
 
+  // ---- Audios de respuestas (retroalimentación). Cada uno es un archivo propio en assets/audio/educadora/.
+  // Si el archivo no existe, se lee el "text" con la voz del teléfono. PK.FB lista todos (ver GUION-DE-AUDIOS.txt).
+  var AF = "assets/audio/educadora/";
+  PK.FB = PK.FB || {};
+  function fb(file, text, group) { return (PK.FB[file] = { src: AF + file, text: text, group: group }); }
+
   // ---- Registro para la zona de adultos (ver js/adultos.js) ----
   var PERSONA_LABEL = { mama: "Mamá", educadora: "Educadora", extrano: "Persona desconocida" };
   function recordBody(p, z, light) {
@@ -102,9 +108,23 @@
   function rule(persona, zone) {
     var l = RULES[persona][zone];
     if (l === "*") { l = (cid() === "nina") ? "r" : "v"; }   // pecho de la educadora
-    var t = (TEXTS[persona] && TEXTS[persona][l]) || (l === "r" ? COMMON_RED : "Esto está bien si tú quieres y te sientes cómodo.");
-    return { light: l, text: t };
+    return { light: l, text: zoneItem(persona, l).text };
   }
+  // Audio de cada combinación persona + color (p. ej. n3-mama-verde.mp3). Se registran todas al cargar.
+  function zoneItem(p, l) {
+    var cls = LIGHTS[l].cls, file = "n3-" + p + "-" + cls + ".mp3";
+    if (!PK.FB[file]) {
+      var t = (TEXTS[p] && TEXTS[p][l]) || (l === "r" ? COMMON_RED : "Esto está bien si tú quieres y te sientes cómodo.");
+      fb(file, t, "Nivel 3 · Partes del cuerpo · " + PERSONA_LABEL[p] + " · luz " + cls);
+    }
+    return PK.FB[file];
+  }
+  Object.keys(RULES).forEach(function (p) {
+    Object.keys(RULES[p]).forEach(function (z) {
+      var l = RULES[p][z];
+      (l === "*" ? ["r", "v"] : [l]).forEach(function (x) { zoneItem(p, x); });
+    });
+  });
 
   var persona = "mama";
   function showResult(l, text) {
@@ -126,7 +146,7 @@
       b.classList.remove("z-verde", "z-amarillo", "z-rojo");
       b.classList.add("z-" + LIGHTS[res.light].cls);
       showResult(res.light, res.text);
-      PK.Audio.say(res.text);
+      PK.Audio.playOnce(zoneItem(persona, res.light), "zona:" + persona + ":" + res.light);   // solo si cambia el color o ya terminó
     } });
     showResult(null, "Toca una parte del cuerpo.");
     if (speak) { PK.Audio.play(item); }
@@ -222,6 +242,8 @@
     { id: "abuela", label: "Abuela", img: "assets/images/familia/abuela.png", emoji: "👵" },
     { id: "profesora", label: "Profesora", img: "assets/images/familia/profesora.png", emoji: "👩‍🏫" }
   ];
+  var TRUST_MSG = "¡Muy bien! Contarle a un adulto de confianza te cuida. Si no te escucha o no te ayuda, busca a otro. Nunca es tu culpa.";
+  var TRUST_FB = fb("n4-confianza.mp3", TRUST_MSG, "Nivel 4 · Al elegir una persona de confianza");
   function refreshTrust() {
     var btns = $("trust-list").querySelectorAll("[data-t]");
     for (var i = 0; i < btns.length; i++) {
@@ -230,7 +252,7 @@
       btns[i].setAttribute("aria-pressed", on ? "true" : "false");
     }
     $("btn-l4-next").disabled = S.trusted.length === 0;
-    $("trust-msg").textContent = S.trusted.length ? "¡Muy bien! Contarle a un adulto de confianza te cuida. Si no te escucha o no te ayuda, busca a otro. Nunca es tu culpa." : "";
+    $("trust-msg").textContent = S.trusted.length ? TRUST_MSG : "";
   }
   TRUST.forEach(function (p) {
     var b = document.createElement("button");
@@ -243,6 +265,7 @@
       var i = S.trusted.indexOf(p.id);
       if (i === -1) { S.trusted.push(p.id); } else { S.trusted.splice(i, 1); }
       PK.record("confianza", S.trusted.map(function (id) { return byId(TRUST, id).label; }));
+      if (i === -1) { PK.Audio.playOnce(TRUST_FB, "confianza"); }   // una vez; vuelve a sonar cuando termina
       refreshTrust();
     });
     $("trust-list").appendChild(b);
@@ -263,6 +286,8 @@
     { id: "enojado", label: "Enojado", emoji: "😠", reply: "Está bien sentir enojo. Respira hondo y cuéntale a un adulto de confianza lo que pasó." },
     { id: "aburrido", label: "Aburrido", emoji: "🥱", reply: "¡Gracias por contármelo! Vamos a seguir con una actividad divertida." }
   ];
+  // Audios: emocion-feliz.mp3, emocion-triste.mp3, emocion-enojado.mp3, emocion-aburrido.mp3
+  FEELINGS.forEach(function (f) { fb("emocion-" + f.id + ".mp3", f.reply, "Nivel 4 · ¿Cómo te sientes ahora? · " + f.label); });
   function refreshFeel() {
     var btns = $("feel-list").querySelectorAll("[data-f]");
     for (var i = 0; i < btns.length; i++) {
@@ -284,7 +309,7 @@
       b.setAttribute("aria-pressed", "false");
       b.appendChild(PK.img("assets/images/emociones/" + cid() + "-" + f.id + ".png", "", f.emoji, "ico"));
       var t = document.createElement("span"); t.textContent = f.label; b.appendChild(t);
-      b.addEventListener("click", function () { S.feeling = f.id; PK.record("emocion", f.label); refreshFeel(); PK.Audio.say(f.reply); });
+      b.addEventListener("click", function () { S.feeling = f.id; PK.record("emocion", f.label); refreshFeel(); PK.Audio.playOnce(PK.FB["emocion-" + f.id + ".mp3"], "emocion:" + f.id); });
       box.appendChild(b);
     });
   }
@@ -309,6 +334,12 @@
       help: "Tienes derecho a decir NO, alejarte si puedes y pedir ayuda a un adulto de confianza." }
   ];
   var Q = { i: 0, answered: false };
+  // Audios de las respuestas: quiz-1-bien.mp3, quiz-1-casi.mp3, quiz-2-bien.mp3 ... (6 archivos)
+  function quizFb(i, ok) {
+    var file = "quiz-" + (i + 1) + "-" + (ok ? "bien" : "casi") + ".mp3";
+    return PK.FB[file] || fb(file, ok ? QUIZ[i].good : QUIZ[i].help, "Nivel 3 · Pregunta " + (i + 1) + " de 3 · " + (ok ? "Muy bien" : "Casi"));
+  }
+  QUIZ.forEach(function (_, i) { quizFb(i, true); quizFb(i, false); });
   function quizItem() {
     // CAMBIAR AUDIO DE LAS PREGUNTAS AQUÍ: assets/audio/educadora/quiz-1.mp3, quiz-2.mp3, quiz-3.mp3
     return { src: "assets/audio/educadora/quiz-" + (Q.i + 1) + ".mp3", text: QUIZ[Q.i].q };
@@ -335,7 +366,7 @@
         recordQuiz(q.q, o.t, !!o.ok, Q.i);
         Q.answered = true;
         $("btn-quiz-next").disabled = false;
-        PK.Audio.say(msg);
+        PK.Audio.playOnce(quizFb(Q.i, !!o.ok), "quiz:" + Q.i + ":" + (o.ok ? "bien" : "casi"));
       });
       box.appendChild(b);
     });
@@ -370,6 +401,10 @@
   var ACT_LABEL = { no: "Decir «NO»", alejar: "Alejarse si puede", contar: "Contárselo a un adulto de confianza" };
   var ACT_MSG = "¡Muy bien! Esa es una buena idea. Puedes hacer una, dos o las tres cosas.";
 
+  // Audios: situacion-cuidado.mp3, situacion-desconocida.mp3, situacion-profesora.mp3, situacion-espacio.mp3
+  // y situacion-acciones.mp3 (cuando elige qué haría).
+  SITS.forEach(function (s) { fb("situacion-" + s.id + ".mp3", s.bad ? SIT_BAD : SIT_OK, "Actividad · Situación: " + s.text); });
+  var ACT_FB = fb("situacion-acciones.mp3", ACT_MSG, "Actividad · Al elegir qué haría");
   SITS.forEach(function (s) {
     var b = document.createElement("button");
     b.type = "button"; b.className = "card"; b.setAttribute("data-s", s.id); b.setAttribute("aria-pressed", "false");
@@ -385,7 +420,7 @@
       r.hidden = false; r.className = "panel result " + (s.bad ? "res-rojo" : "res-verde"); r.textContent = msg;
       $("sit-actions").hidden = !s.bad;
       $("btn-sit-next").disabled = false;
-      PK.Audio.say(msg);
+      PK.Audio.playOnce(PK.FB["situacion-" + s.id + ".mp3"], "situacion:" + s.id);
     });
     $("sit-list").appendChild(b);
   });
@@ -397,7 +432,7 @@
       PK.record("acciones", S.actions.map(function (k) { return ACT_LABEL[k]; }));
       e.currentTarget.classList.toggle("selected", i === -1);
       $("act-msg").textContent = ACT_MSG;
-      PK.Audio.say(ACT_MSG);
+      PK.Audio.playOnce(ACT_FB, "acciones");
     });
   }
   PK.hooks.situations = function () {
