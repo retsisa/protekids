@@ -66,7 +66,7 @@
       ]
     },
     // ---- Cuentos anteriores (se conservan; sin audio grabado: se leen con la voz del teléfono) ----
-    {
+    /*{
       id: "mi-cuerpo-es-mio",
       title: "Mi cuerpo es mío",
       description: "Luna y su cuerpo especial.",
@@ -98,6 +98,6 @@
         { title: "Parte 3", audio: null, text: "Rojo: las partes privadas son solo tuyas. Nadie debe tocarlas ni verlas." },
         { title: "Parte 4", audio: null, text: "Si alguien lo intenta, di NO fuerte, aléjate y cuéntaselo a tu adulto de confianza." }
       ]
-    }
+    }*/
   ];
 })();
