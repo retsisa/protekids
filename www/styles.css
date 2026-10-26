@@ -170,3 +170,16 @@ h2 { font-size: 1.7rem; margin: 6px 0; color: #ff4f93; }
   z-index: 50; width: 48px; height: 48px; border: none; border-radius: 50%; background: #fff; font-size: 1.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, .2); }
 .music[hidden] { display: none; }
+
+/* ===== Zona de adultos ===== */
+.gate-q { font-size: 2.4rem; font-weight: 800; color: #ff4f93; margin: 4px 0; }
+#gate-input { width: 150px; font-size: 2rem; text-align: center; padding: 10px; border: 3px solid #d9c3f0; border-radius: 16px; color: #4a2040; }
+.adult-body { width: 100%; max-width: 520px; text-align: left; }
+.res-sec { background: #fff; border-radius: 18px; padding: 12px 16px; margin-bottom: 10px; }
+.res-sec h3 { margin: 0 0 6px; font-size: 1.05rem; color: #8e75bd; }
+.res-sec ul { margin: 0; padding-left: 20px; line-height: 1.55; }
+.res-sec .sub { font-weight: 700; margin: 8px 0 2px; }
+.res-sec .none { color: #999; margin: 0; }
+.note { max-width: 520px; font-size: .95rem; color: #6b4a63; background: #fff6d6; border-radius: 14px; padding: 10px 14px; text-align: left; }
+#adult-results { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+#adult-results[hidden] { display: none; }
