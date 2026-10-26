@@ -59,6 +59,7 @@
   for (var m = 0; m < moods.length; m++) {
     moods[m].addEventListener("click", function (e) {
       S.mood = e.currentTarget.getAttribute("data-mood");
+      PK.record("animo", S.mood === "mal" ? "Mal" : "Bien");
       PK.go("level1");
     });
   }
@@ -77,7 +78,7 @@
       var t = document.createElement("span");
       t.textContent = c.label;
       b.appendChild(holder); b.appendChild(t);
-      b.addEventListener("click", function () { S.character = c.id; refreshLevel1(); });
+      b.addEventListener("click", function () { S.character = c.id; PK.record("personaje", c.label); refreshLevel1(); });
       box.appendChild(b);
     });
   }
@@ -114,6 +115,7 @@
   $("btn-retry").addEventListener("click", function () { $("notready").hidden = true; $("wait-msg").hidden = true; });
 
   // ----- Nivel 2: Prendas de vestir -----
+  function recordWorn() { PK.record("prendas", S.worn.map(function (id) { return byId(GARMENTS, id).label; })); }
   function renderStage() {
     var st = $("stage");
     st.textContent = "";
@@ -154,14 +156,15 @@
       b.addEventListener("click", function () {   // cada prenda se pone/quita sin bloquear a las demás
         var i = S.worn.indexOf(g.id);
         if (i === -1) { S.worn.push(g.id); } else { S.worn.splice(i, 1); }
+        recordWorn();
         renderStage();
       });
       $("tray").appendChild(b);
     });
   }
   PK.hooks.level2 = function () { renderStage(); PK.Audio.play(PK.AUDIO.nivel2); };
-  $("btn-undo").addEventListener("click", function () { S.worn.pop(); renderStage(); });
-  $("btn-reset").addEventListener("click", function () { S.worn = []; renderStage(); });
+  $("btn-undo").addEventListener("click", function () { S.worn.pop(); recordWorn(); renderStage(); });
+  $("btn-reset").addEventListener("click", function () { S.worn = []; recordWorn(); renderStage(); });
   $("btn-l2-next").addEventListener("click", function () { PK.go("level3"); });
 
   buildCharacters();
