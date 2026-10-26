@@ -25,6 +25,7 @@
       <button class="choice" data-mood="mal"><span data-img="assets/images/emociones/triste.png" data-alt="" data-fb="😢" data-cls="ico"></span><span>Mal</span></button>
     </div>
     <button class="link" id="btn-stories">📖 Cuentos</button>
+    <button class="link" id="btn-adults">👨‍👩‍👧 Zona de adultos</button>
   </main>
 
   <!-- ===== NIVEL 1 ===== -->
@@ -171,6 +172,26 @@
     <button class="big secondary" id="btn-end-stories">📖 Cuentos</button>
   </main>
 
+  <!-- ===== ZONA DE ADULTOS ===== -->
+  <main id="adults" class="screen">
+    <button class="back" data-back>⬅ Volver</button>
+    <h2>👨‍👩‍👧 Zona de adultos</h2>
+    <div id="adult-gate" class="panel">
+      <p>Para entrar, resuelve esta operación:</p>
+      <p id="gate-q" class="gate-q"></p>
+      <input id="gate-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="Respuesta de la operación">
+      <p id="gate-msg" class="soft" role="status" aria-live="polite"></p>
+      <button class="big" id="btn-gate">Entrar</button>
+    </div>
+    <div id="adult-results" hidden>
+      <p id="adult-date" class="soft"></p>
+      <div id="adult-body" class="adult-body"></div>
+      <p class="note">Estas respuestas son solo del juego: <strong>no son un diagnóstico ni una evaluación</strong>. Se guardan únicamente en este teléfono. Si algo le preocupa, escuche al niño con calma, sin presionarlo ni interrogarlo, y busque la ayuda de un profesional o de la persona responsable de protección infantil.</p>
+      <button class="big secondary" id="btn-adult-clear">🗑 Borrar resultados</button>
+      <button class="big" id="btn-adult-exit">Salir de la zona de adultos</button>
+    </div>
+  </main>
+
   <!-- ===== CUENTOS (se conserva) ===== -->
   <main id="stories" class="screen">
     <h2>Cuentos</h2>
@@ -203,5 +224,6 @@
   <script src="app.js"></script>
   <script src="js/levels12.js"></script>
   <script src="js/levels34.js"></script>
+  <script src="js/adultos.js"></script>
 </body>
 </html>
