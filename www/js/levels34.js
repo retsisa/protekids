@@ -5,6 +5,19 @@
   var CHARS = PK.CHARACTERS;
   function cid() { return S.character || "nino"; }
 
+  // ---- Registro para la zona de adultos (ver js/adultos.js) ----
+  var PERSONA_LABEL = { mama: "Mamá", educadora: "Educadora", extrano: "Persona desconocida" };
+  function recordBody(p, z, light) {
+    var list = (PK.res.cuerpo || []).filter(function (e) { return !(e.p === p && e.id === z.id); });
+    list.push({ p: p, id: z.id, z: z.label, l: light });
+    PK.record("cuerpo", list);
+  }
+  function recordQuiz(q, a, ok, i) {
+    var list = (PK.res.preguntas || []).slice();
+    list[i] = { q: q, a: a, ok: ok };
+    PK.record("preguntas", list);
+  }
+
   // ====================== CUERPO ======================
   // Zonas tocables medidas sobre los dibujos reales assets/images/cuerpo/silueta-nino.png y silueta-nina.png.
   // Cada zona: [id, zona, etiqueta, centroX %, centroY %, ancho %, alto %]  (% del PNG de la silueta).
@@ -109,6 +122,7 @@
     $("l3-question").textContent = item.text;
     buildBody($("body-stage"), cid(), { tap: function (z, b) {
       var res = rule(persona, z.zone);
+      recordBody(persona, z, res.light);
       b.classList.remove("z-verde", "z-amarillo", "z-rojo");
       b.classList.add("z-" + LIGHTS[res.light].cls);
       showResult(res.light, res.text);
@@ -183,6 +197,7 @@
     else { var t = P.order[P.sel]; P.order[P.sel] = P.order[pos]; P.order[pos] = t; P.sel = -1; }
     if (isSolved()) {
       P.solved = true;
+      PK.record("rompecabezas", "Lo completó");
       $("puzzle-msg").textContent = "🎉 ¡Lo lograste! ¡Qué bien armaste al gatito!";
       $("btn-pz-next").disabled = false;
       PK.Audio.play(PK.AUDIO.puzzlewin);
@@ -192,7 +207,7 @@
   PK.hooks.puzzle = function () { if (!P.order.length || P.solved) { shufflePuzzle(); } else { renderPuzzle(); } PK.Audio.play(PK.AUDIO.puzzle); };
   $("btn-shuffle").addEventListener("click", shufflePuzzle);
   $("btn-pz-next").addEventListener("click", function () { PK.go("end"); });
-  $("btn-pz-skip").addEventListener("click", function () { PK.go("end"); });
+  $("btn-pz-skip").addEventListener("click", function () { if (!P.solved && PK.res.rompecabezas !== "Lo completó") { PK.record("rompecabezas", "Lo saltó"); } PK.go("end"); });
 
   // ====================== NIVEL 4 ======================
   // CAMBIAR IMAGEN DE CADA FAMILIAR AQUÍ (campo img). Alternativa: emoji.
@@ -227,6 +242,7 @@
     b.addEventListener("click", function () {
       var i = S.trusted.indexOf(p.id);
       if (i === -1) { S.trusted.push(p.id); } else { S.trusted.splice(i, 1); }
+      PK.record("confianza", S.trusted.map(function (id) { return byId(TRUST, id).label; }));
       refreshTrust();
     });
     $("trust-list").appendChild(b);
@@ -268,7 +284,7 @@
       b.setAttribute("aria-pressed", "false");
       b.appendChild(PK.img("assets/images/emociones/" + cid() + "-" + f.id + ".png", "", f.emoji, "ico"));
       var t = document.createElement("span"); t.textContent = f.label; b.appendChild(t);
-      b.addEventListener("click", function () { S.feeling = f.id; refreshFeel(); PK.Audio.say(f.reply); });
+      b.addEventListener("click", function () { S.feeling = f.id; PK.record("emocion", f.label); refreshFeel(); PK.Audio.say(f.reply); });
       box.appendChild(b);
     });
   }
@@ -316,6 +332,7 @@
         fb.className = "panel result " + (o.ok ? "res-verde" : "res-amarillo");
         fb.textContent = msg;
         S.quiz[Q.i] = !!o.ok;
+        recordQuiz(q.q, o.t, !!o.ok, Q.i);
         Q.answered = true;
         $("btn-quiz-next").disabled = false;
         PK.Audio.say(msg);
@@ -350,6 +367,7 @@
   ];
   var SIT_BAD = "Si algo te incomoda, no importa quién sea: puedes decir NO, alejarte si puedes y contárselo a un adulto de confianza. No es tu culpa.";
   var SIT_OK = "Esta situación parece un cuidado o un saludo con respeto. Pero recuerda: si alguna vez algo te incomoda, aunque sea con alguien que conoces, puedes decir NO y contarlo.";
+  var ACT_LABEL = { no: "Decir «NO»", alejar: "Alejarse si puede", contar: "Contárselo a un adulto de confianza" };
   var ACT_MSG = "¡Muy bien! Esa es una buena idea. Puedes hacer una, dos o las tres cosas.";
 
   SITS.forEach(function (s) {
@@ -362,6 +380,7 @@
       for (var k = 0; k < all.length; k++) { all[k].classList.remove("selected"); all[k].setAttribute("aria-pressed", "false"); }
       b.classList.add("selected"); b.setAttribute("aria-pressed", "true");
       if (S.situations.indexOf(s.id) === -1) { S.situations.push(s.id); }
+      PK.record("situaciones", S.situations.map(function (id) { return byId(SITS, id).text; }));
       var r = $("sit-result"), msg = s.bad ? SIT_BAD : SIT_OK;
       r.hidden = false; r.className = "panel result " + (s.bad ? "res-rojo" : "res-verde"); r.textContent = msg;
       $("sit-actions").hidden = !s.bad;
@@ -375,6 +394,7 @@
     acts[a].addEventListener("click", function (e) {
       var id = e.currentTarget.getAttribute("data-act"), i = S.actions.indexOf(id);
       if (i === -1) { S.actions.push(id); } else { S.actions.splice(i, 1); }
+      PK.record("acciones", S.actions.map(function (k) { return ACT_LABEL[k]; }));
       e.currentTarget.classList.toggle("selected", i === -1);
       $("act-msg").textContent = ACT_MSG;
       PK.Audio.say(ACT_MSG);
