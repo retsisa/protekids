@@ -242,7 +242,7 @@
     { id: "abuela", label: "Abuela", img: "assets/images/familia/abuela.png", emoji: "👵" },
     { id: "profesora", label: "Profesora", img: "assets/images/familia/profesora.png", emoji: "👩‍🏫" }
   ];
-  var TRUST_MSG = "¡Muy bien! Contarle a un adulto de confianza te cuida. Si no te escucha o no te ayuda, busca a otro. Nunca es tu culpa.";
+  var TRUST_MSG = "¡Muy bien! Contarle a un adulto de confianza te cuida. Si no te escucha o no te ayuda, busca a otro.";
   var TRUST_FB = fb("n4-confianza.mp3", TRUST_MSG, "Nivel 4 · Al elegir una persona de confianza");
   function refreshTrust() {
     var btns = $("trust-list").querySelectorAll("[data-t]");
