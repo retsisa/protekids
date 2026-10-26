@@ -102,7 +102,7 @@
       r: "¡Alto! Una persona desconocida no debe tocarte aquí. Di NO, aléjate y cuéntale a un adulto de confianza."
     }
   };
-  var COMMON_RED = "¡Alto! Esta parte es solo tuya. Nadie debe tocarla. Di NO, aléjate y cuéntale a un adulto de confianza. ¡No es tu culpa!";
+  var COMMON_RED = "¡Alto! Esta parte es solo tuya. Nadie debe tocarla. Di NO, aléjate y cuéntale a un adulto de confianza.";
   var AUDIO_KEY = { mama: "nivel3mama", educadora: "nivel3educadora", extrano: "nivel3extrano" };
 
   function rule(persona, zone) {
