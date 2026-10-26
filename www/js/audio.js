@@ -29,18 +29,27 @@
     nivel4: { src: A + "educadora/nivel4.mp3", text: "Si alguien te toca aquí o hace algo que te incomoda, ¿a quién se lo contarías? Puedes elegir a una o más personas." },
     sentiste: { src: A + "educadora/sentiste.mp3", text: "¿Y cómo te sientes ahora? Toca la carita que se parezca a ti." },
     // Actividad: ¿Qué situación te incomoda?
-    situaciones: { src: A + "educadora/situaciones.mp3", text: "Mira las situaciones. ¿Cuál haría sentir incómodo a nuestro personaje? Toca la que no te gusta." },
+    // CAMBIAR AUDIO DE SITUACIONES AQUÍ: hay 2 versiones, según el personaje elegido en el Nivel 1
+    situaciones_nino: { src: A + "educadora/situaciones-nino.mp3", text: "Mira las situaciones. ¿Qué situación te pone incómodo? Toca la que no te gusta." },
+    situaciones_nina: { src: A + "educadora/situaciones-nina.mp3", text: "Mira las situaciones. ¿Qué situación te pone incómoda? Toca la que no te gusta." },
     // Despedida (RECURSO PROPIO: reemplaza por la grabación original)
     despedida: { src: A + "educadora/despedida.mp3", text: "ProteKids te enseña a amar, respetar y cuidar tu cuerpo. Si algo te incomoda, ¡cuéntaselo a un adulto de confianza! ¡Protege tu cuerpo, alza tu voz y vive feliz y seguro! ¡Gracias por visitarnos! ¡Hasta una próxima aventura con ProteKids!" }
   };
 
+  // PK.AUDIO.situaciones (y el botón 🔊 data-say="situaciones") devuelve el audio del niño o de la niña.
+  Object.defineProperty(PK.AUDIO, "situaciones", {
+    enumerable: false,
+    get: function () { return (PK.state && PK.state.character === "nina") ? PK.AUDIO.situaciones_nina : PK.AUDIO.situaciones_nino; }
+  });
+
   var el = new Audio();
   var token = 0;
+  var playing = false, curKey = null, startedAt = 0;   // para "no repetir mientras suena lo mismo"
 
   function talking(on) { if (PK.Educadora) { PK.Educadora.setTalking(on); } duck(on); }
 
   function stop() {
-    token += 1;
+    token += 1; playing = false; curKey = null;
     try { el.pause(); } catch (e) {}
     try { if (window.speechSynthesis) { window.speechSynthesis.cancel(); } } catch (e2) {}
     talking(false);
@@ -48,20 +57,22 @@
 
   function speak(text, my, done) {
     try {
-      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !text) { if (done) { done(); } return; }
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !text) { if (my === token) { playing = false; } if (done) { done(); } return; }
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "es-ES"; u.rate = 0.9; u.pitch = 1.2;
       u.onstart = function () { if (my === token) { talking(true); } };
-      u.onend = u.onerror = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
+      u.onend = u.onerror = function () { if (my !== token) { return; } playing = false; talking(false); if (done) { done(); } };
       window.speechSynthesis.speak(u);
-    } catch (e) { talking(false); }
+    } catch (e) { playing = false; talking(false); }
   }
 
   // item = { src, text }. Sin "src" se usa directamente la voz del teléfono.
-  function play(item, done) {
+  // key (opcional) identifica el mensaje; sirve para playOnce().
+  function play(item, done, key) {
     if (!item) { return; }
     stop();
     var my = token, fell = false;
+    playing = true; curKey = key || null; startedAt = Date.now();
     function fallback() {
       if (fell || my !== token) { return; }
       fell = true;
@@ -72,13 +83,13 @@
     if (!item.src) { fallback(); return; }
     el.onerror = fallback;
     el.onplaying = function () { if (my === token) { talking(true); } };
-    el.onended = function () { if (my !== token) { return; } talking(false); if (done) { done(); } };
+    el.onended = function () { if (my !== token) { return; } playing = false; talking(false); if (done) { done(); } };
     try {
       el.src = item.src;
       var p = el.play();
       if (p && p.catch) {
         p.catch(function (err) {
-          if (err && err.name === "NotAllowedError") { return; } // bloqueado por el sistema: queda en silencio
+          if (err && err.name === "NotAllowedError") { if (my === token) { playing = false; } return; } // bloqueado por el sistema: queda en silencio
           fallback();
         });
       }
@@ -126,5 +137,13 @@
   }
   initMusic();
 
-  PK.Audio = { play: play, stop: stop, say: function (text) { play({ text: text }); } };
+  // Reproduce solo si ese mensaje (key) NO está sonando ya. Si cambia la key (otro color, otra opción) corta
+  // el audio actual y suena el nuevo; si es la misma key y el audio ya terminó, vuelve a sonar.
+  function playOnce(item, key) {
+    if (playing && curKey === key && Date.now() - startedAt < 30000) { return false; }
+    play(item, null, key);
+    return true;
+  }
+
+  PK.Audio = { play: play, playOnce: playOnce, stop: stop, say: function (text) { play({ text: text }); } };
 })();
